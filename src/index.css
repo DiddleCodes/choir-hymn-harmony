@@ -1,40 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Hymnal Library Design System - Warm, elegant, sacred music inspired */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Background & Foreground */
+    --background: 43 33% 98%;
+    --foreground: 25 25% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card System */
+    --card: 43 50% 96%;
+    --card-foreground: 25 25% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Interactive Elements */
+    --popover: 43 50% 96%;
+    --popover-foreground: 25 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Sacred Gold Primary */
+    --primary: 43 74% 45%;
+    --primary-foreground: 43 33% 98%;
+    --primary-glow: 43 74% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Warm Secondary */
+    --secondary: 43 30% 92%;
+    --secondary-foreground: 25 25% 15%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted Elements */
+    --muted: 43 20% 90%;
+    --muted-foreground: 25 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent Deep Blue */
+    --accent: 220 30% 25%;
+    --accent-foreground: 43 33% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Burgundy Destructive */
+    --destructive: 350 65% 45%;
+    --destructive-foreground: 43 33% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders & Inputs */
+    --border: 43 25% 85%;
+    --input: 43 25% 85%;
+    --ring: 43 74% 45%;
+
+    /* Sacred Design Tokens */
+    --sacred-cream: 43 40% 95%;
+    --sacred-gold: 43 74% 45%;
+    --sacred-deep: 220 30% 25%;
+    --sacred-burgundy: 350 65% 45%;
+
+    /* Gradients */
+    --gradient-sacred: linear-gradient(135deg, hsl(var(--sacred-gold)), hsl(var(--primary-glow)));
+    --gradient-divine: linear-gradient(180deg, hsl(var(--sacred-cream)), hsl(var(--background)));
+    --gradient-hymnal: linear-gradient(45deg, hsl(var(--sacred-gold) / 0.1), hsl(var(--accent) / 0.1));
+
+    /* Shadows */
+    --shadow-sacred: 0 10px 30px -5px hsl(var(--sacred-gold) / 0.3);
+    --shadow-gentle: 0 4px 20px -4px hsl(var(--sacred-deep) / 0.15);
+    --shadow-divine: 0 0 40px hsl(var(--sacred-gold) / 0.2);
+
+    /* Typography Scale */
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Animations */
+    --transition-sacred: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-gentle: all 0.3s ease-in-out;
 
     --radius: 0.5rem;
 
@@ -56,33 +90,34 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark theme with warm, sacred ambiance */
+    --background: 25 35% 8%;
+    --foreground: 43 33% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 25 25% 12%;
+    --card-foreground: 43 33% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 25 25% 12%;
+    --popover-foreground: 43 33% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 43 74% 55%;
+    --primary-foreground: 25 35% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 25 15% 18%;
+    --secondary-foreground: 43 33% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 25 10% 20%;
+    --muted-foreground: 43 15% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 220 40% 35%;
+    --accent-foreground: 43 33% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 350 65% 55%;
+    --destructive-foreground: 43 33% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 25 20% 22%;
+    --input: 25 20% 22%;
+    --ring: 43 74% 55%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +135,44 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .sacred-gradient {
+    background: var(--gradient-sacred);
+  }
+
+  .divine-gradient {
+    background: var(--gradient-divine);
+  }
+
+  .hymnal-gradient {
+    background: var(--gradient-hymnal);
+  }
+
+  .shadow-sacred {
+    box-shadow: var(--shadow-sacred);
+  }
+
+  .shadow-gentle {
+    box-shadow: var(--shadow-gentle);
+  }
+
+  .shadow-divine {
+    box-shadow: var(--shadow-divine);
+  }
+
+  .transition-sacred {
+    transition: var(--transition-sacred);
+  }
+
+  .transition-gentle {
+    transition: var(--transition-gentle);
   }
 }

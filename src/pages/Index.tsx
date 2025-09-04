@@ -1,12 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import HeroSection from "@/components/HeroSection";
+import SongLibrary from "@/components/SongLibrary";
+import SongModal from "@/components/SongModal";
+import type { Song } from "@/data/songs";
 
 const Index = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+
+  const handleSongSelect = (song: Song) => {
+    setSelectedSong(song);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedSong(null);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <HeroSection 
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
+      <SongLibrary 
+        searchTerm={searchTerm}
+        onSongSelect={handleSongSelect}
+      />
+      <SongModal 
+        song={selectedSong}
+        isOpen={!!selectedSong}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };
