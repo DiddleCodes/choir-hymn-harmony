@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { X, Music, User, Calendar, FileText, Heart, Share2 } from "lucide-react";
-import type { Song } from "@/data/songs";
+import type { Song } from "@/hooks/useSongs";
 
 interface SongModalProps {
   song: Song | null;

@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Music, Calendar, User, FileText } from "lucide-react";
-import type { Song } from "@/data/songs";
+import type { Song } from "@/hooks/useSongs";
 
 interface SongCardProps {
   song: Song;
