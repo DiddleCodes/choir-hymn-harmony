@@ -165,122 +165,168 @@ const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
           </div>
 
           <TabsContent value="add" className="p-6 pt-4">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Title *</Label>
-                  <Input
-                    id="title"
-                    value={newSong.title}
-                    onChange={(e) => setNewSong({...newSong, title: e.target.value})}
-                    placeholder="Song title"
-                    required
-                  />
+            <ScrollArea className="h-[600px]">
+              <form onSubmit={handleSubmit} className="space-y-6 pr-4">
+                {/* Required Fields Section */}
+                <div className="border rounded-lg p-4 bg-muted/30">
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-destructive rounded-full"></span>
+                    Required Information
+                  </h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="title" className="text-sm font-medium">
+                        Song Title *
+                      </Label>
+                      <Input
+                        id="title"
+                        value={newSong.title}
+                        onChange={(e) => setNewSong({...newSong, title: e.target.value})}
+                        placeholder="e.g., Amazing Grace"
+                        required
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Enter the full, official title of the song</p>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="category" className="text-sm font-medium">Category *</Label>
+                      <Select value={newSong.category} onValueChange={(value) => setNewSong({...newSong, category: value})}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.filter(c => c.id !== 'all').map((category) => (
+                            <SelectItem key={category.id} value={category.name}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground mt-1">Choose the most appropriate category</p>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="lyrics" className="text-sm font-medium">
+                        Lyrics *
+                      </Label>
+                      <Textarea
+                        id="lyrics"
+                        value={newSong.lyrics}
+                        onChange={(e) => setNewSong({...newSong, lyrics: e.target.value})}
+                        placeholder="Verse 1:&#10;Amazing grace, how sweet the sound&#10;That saved a wretch like me&#10;&#10;Chorus:&#10;[Enter chorus here]&#10;&#10;Verse 2:&#10;[Continue with verses]"
+                        className="min-h-[200px] mt-1 font-mono text-sm"
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Use clear structure: "Verse 1:", "Chorus:", "Bridge:", etc. Separate sections with blank lines.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="category">Category *</Label>
-                  <Select value={newSong.category} onValueChange={(value) => setNewSong({...newSong, category: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.filter(c => c.id !== 'all').map((category) => (
-                        <SelectItem key={category.id} value={category.name}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="author">Author</Label>
-                  <Input
-                    id="author"
-                    value={newSong.author}
-                    onChange={(e) => setNewSong({...newSong, author: e.target.value})}
-                    placeholder="Song author"
-                  />
+                {/* Song Details Section */}
+                <div className="border rounded-lg p-4">
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-3">Song Details</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="number" className="text-sm font-medium">Hymn Number</Label>
+                      <Input
+                        id="number"
+                        type="number"
+                        value={newSong.number}
+                        onChange={(e) => setNewSong({...newSong, number: e.target.value})}
+                        placeholder="e.g., 123"
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Official hymnal number (if applicable)</p>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="year" className="text-sm font-medium">Year Written</Label>
+                      <Input
+                        id="year"
+                        type="number"
+                        min="1000"
+                        max={new Date().getFullYear()}
+                        value={newSong.year}
+                        onChange={(e) => setNewSong({...newSong, year: e.target.value})}
+                        placeholder="e.g., 1779"
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Year the song was written</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="composer">Composer</Label>
-                  <Input
-                    id="composer"
-                    value={newSong.composer}
-                    onChange={(e) => setNewSong({...newSong, composer: e.target.value})}
-                    placeholder="Song composer"
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="year">Year</Label>
-                  <Input
-                    id="year"
-                    type="number"
-                    value={newSong.year}
-                    onChange={(e) => setNewSong({...newSong, year: e.target.value})}
-                    placeholder="Year written"
-                  />
+                {/* Attribution Section */}
+                <div className="border rounded-lg p-4">
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-3">Attribution & Credits</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="author" className="text-sm font-medium">Lyricist/Author</Label>
+                      <Input
+                        id="author"
+                        value={newSong.author}
+                        onChange={(e) => setNewSong({...newSong, author: e.target.value})}
+                        placeholder="e.g., John Newton"
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Person who wrote the lyrics</p>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="composer" className="text-sm font-medium">Composer</Label>
+                      <Input
+                        id="composer"
+                        value={newSong.composer}
+                        onChange={(e) => setNewSong({...newSong, composer: e.target.value})}
+                        placeholder="e.g., John P. Holbrook"
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Person who composed the music</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="number">Hymn Number</Label>
-                  <Input
-                    id="number"
-                    type="number"
-                    value={newSong.number}
-                    onChange={(e) => setNewSong({...newSong, number: e.target.value})}
-                    placeholder="Hymn number"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="tags">Tags</Label>
-                  <Input
-                    id="tags"
-                    value={newSong.tags}
-                    onChange={(e) => setNewSong({...newSong, tags: e.target.value})}
-                    placeholder="grace, love, worship"
-                  />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="lyrics">Lyrics *</Label>
-                <Textarea
-                  id="lyrics"
-                  value={newSong.lyrics}
-                  onChange={(e) => setNewSong({...newSong, lyrics: e.target.value})}
-                  placeholder="Enter lyrics here... Separate verses with double line breaks"
-                  className="min-h-[200px] font-mono text-sm"
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  Tip: Separate verses with double line breaks (press Enter twice)
-                </p>
-              </div>
+                {/* Tags & Classification */}
+                <div className="border rounded-lg p-4">
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-3">Tags & Classification</h4>
+                  <div>
+                    <Label htmlFor="tags" className="text-sm font-medium">Tags</Label>
+                    <Input
+                      id="tags"
+                      value={newSong.tags}
+                      onChange={(e) => setNewSong({...newSong, tags: e.target.value})}
+                      placeholder="worship, praise, christmas, traditional, contemporary"
+                      className="mt-1"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Comma-separated keywords for easy searching. Examples: worship, praise, christmas, easter, traditional, contemporary
+                    </p>
+                  </div>
+                </div>
 
-              <div className="flex gap-2">
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Adding...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Song
-                    </>
-                  )}
-                </Button>
-                <Button type="button" variant="outline" onClick={resetForm}>
-                  Clear
-                </Button>
-              </div>
-            </form>
+                <div className="flex gap-2 sticky bottom-0 bg-background pt-4 border-t">
+                  <Button type="submit" disabled={isSubmitting} className="flex-1">
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Adding Song...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Song
+                      </>
+                    )}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={resetForm}>
+                    Clear Form
+                  </Button>
+                </div>
+              </form>
+            </ScrollArea>
           </TabsContent>
 
           <TabsContent value="manage" className="p-6 pt-4">
