@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { X, Music, User, Calendar, FileText, Heart, Share2 } from "lucide-react";
+import { X, Music, User, Calendar, FileText, Heart, Share2, Languages, Globe } from "lucide-react";
+import { useState } from "react";
 import type { Song } from "@/hooks/useSongs";
 
 interface SongModalProps {
@@ -13,6 +14,8 @@ interface SongModalProps {
 }
 
 const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
+  const [viewMode, setViewMode] = useState<'english' | 'bilingual'>('bilingual');
+  
   if (!song) return null;
 
   const getCategoryColor = (category: string) => {
@@ -79,6 +82,32 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                   </Badge>
                 )}
               </div>
+              {/* Language toggle for hymns */}
+              {song.type === 'hymn' && song.yorubaLyrics && (
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/30">
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">View:</span>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant={viewMode === 'english' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('english')}
+                      className="h-7 px-3 text-xs"
+                    >
+                      <Globe className="w-3 h-3 mr-1" />
+                      English Only
+                    </Button>
+                    <Button
+                      variant={viewMode === 'bilingual' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('bilingual')}
+                      className="h-7 px-3 text-xs"
+                    >
+                      <Languages className="w-3 h-3 mr-1" />
+                      Bilingual
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="w-4 h-4" />
@@ -106,22 +135,22 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                                   {index + 1}
                                 </span>
                               </div>
-                              <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <div>
-                                  <h5 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">English</h5>
-                                  <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
-                                    {englishVerse}
-                                  </pre>
-                                </div>
-                                {yorubaVerse && (
-                                  <div>
-                                    <h5 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Yoruba</h5>
-                                    <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
-                                      {yorubaVerse}
-                                    </pre>
-                                  </div>
-                                )}
-                              </div>
+                               <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                 <div>
+                                   <h5 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">English</h5>
+                                   <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
+                                     {englishVerse}
+                                   </pre>
+                                 </div>
+                                 {viewMode === 'bilingual' && yorubaVerse && (
+                                   <div>
+                                     <h5 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Yoruba</h5>
+                                     <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
+                                       {yorubaVerse}
+                                     </pre>
+                                   </div>
+                                 )}
+                               </div>
                             </div>
                           </CardContent>
                         </Card>
