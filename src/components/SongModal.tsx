@@ -61,8 +61,23 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                 </Badge>
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <FileText className="w-4 h-4" />
-                  <span>{song.verses} verses</span>
+                  <span>
+                    {song.type === 'hymn' 
+                      ? `${(song.englishLyrics?.length || 0)} verses (Bilingual)`
+                      : `${song.verses} verses`
+                    }
+                  </span>
                 </div>
+                {song.type === 'hymn' && song.hymnNumber && (
+                  <Badge variant="secondary">
+                    Hymn #{song.hymnNumber}
+                  </Badge>
+                )}
+                {song.type === 'song' && song.number && (
+                  <Badge variant="secondary">
+                    #{song.number}
+                  </Badge>
+                )}
               </div>
             </div>
             <Button variant="ghost" size="sm" onClick={onClose}>
@@ -77,24 +92,63 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
             <div className="space-y-8">
               {/* Lyrics */}
               <div className="space-y-6">
-                {song.lyrics.map((verse, index) => (
-                  <Card key={index} className="bg-card/20 border-border/30">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-medium text-primary">
-                            {index + 1}
-                          </span>
+                {song.type === 'hymn' ? (
+                  // Bilingual hymn layout
+                  <div className="space-y-6">
+                    {song.englishLyrics?.map((englishVerse, index) => {
+                      const yorubaVerse = song.yorubaLyrics?.[index];
+                      return (
+                        <Card key={index} className="bg-card/20 border-border/30">
+                          <CardContent className="p-6">
+                            <div className="flex items-start gap-4">
+                              <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                <span className="text-sm font-medium text-primary">
+                                  {index + 1}
+                                </span>
+                              </div>
+                              <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div>
+                                  <h5 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">English</h5>
+                                  <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
+                                    {englishVerse}
+                                  </pre>
+                                </div>
+                                {yorubaVerse && (
+                                  <div>
+                                    <h5 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Yoruba</h5>
+                                    <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
+                                      {yorubaVerse}
+                                    </pre>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  // Regular song layout
+                  song.lyrics.map((verse, index) => (
+                    <Card key={index} className="bg-card/20 border-border/30">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-medium text-primary">
+                              {index + 1}
+                            </span>
+                          </div>
+                          <div className="flex-1">
+                            <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
+                              {verse}
+                            </pre>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
-                            {verse}
-                          </pre>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
               </div>
 
               {/* Tags */}

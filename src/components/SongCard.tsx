@@ -40,9 +40,21 @@ const SongCard = ({ song, onSelect }: SongCardProps) => {
               </div>
             )}
           </div>
-          <Badge variant="outline" className={getCategoryColor(song.category)}>
-            {song.category}
-          </Badge>
+          <div className="flex flex-col gap-2 items-end">
+            <Badge variant="outline" className={getCategoryColor(song.category)}>
+              {song.category}
+            </Badge>
+            {song.type === 'hymn' && song.hymnNumber && (
+              <Badge variant="secondary" className="text-xs">
+                Hymn #{song.hymnNumber}
+              </Badge>
+            )}
+            {song.type === 'song' && song.number && (
+              <Badge variant="secondary" className="text-xs">
+                #{song.number}
+              </Badge>
+            )}
+          </div>
         </div>
       </CardHeader>
       
@@ -50,7 +62,10 @@ const SongCard = ({ song, onSelect }: SongCardProps) => {
         <div className="space-y-3">
           {/* Lyrics Preview */}
           <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-            {song.lyrics[0]?.replace(/\n/g, ' ')}
+            {song.type === 'hymn' 
+              ? song.englishLyrics?.[0]?.replace(/\n/g, ' ') || 'English lyrics available'
+              : song.lyrics[0]?.replace(/\n/g, ' ')
+            }
           </p>
           
           {/* Song Details */}
@@ -58,7 +73,12 @@ const SongCard = ({ song, onSelect }: SongCardProps) => {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <FileText className="w-3 h-3" />
-                <span>{song.verses} verses</span>
+                <span>
+                  {song.type === 'hymn' 
+                    ? `${(song.englishLyrics?.length || 0)} verses (Bilingual)`
+                    : `${song.verses} verses`
+                  }
+                </span>
               </div>
               {song.year && (
                 <div className="flex items-center gap-1">
@@ -91,7 +111,7 @@ const SongCard = ({ song, onSelect }: SongCardProps) => {
             className="w-full mt-3 group-hover:bg-primary/5 group-hover:text-primary transition-gentle"
           >
             <Music className="w-4 h-4 mr-2" />
-            View Lyrics
+            View {song.type === 'hymn' ? 'Hymn' : 'Lyrics'}
           </Button>
         </div>
       </CardContent>

@@ -32,8 +32,12 @@ const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
     title: '',
     author: '',
     composer: '',
+    type: 'song' as 'song' | 'hymn',
     category: '',
     lyrics: '',
+    englishLyrics: '',
+    yorubaLyrics: '',
+    hymnNumber: '',
     year: '',
     number: '',
     tags: '',
@@ -44,8 +48,12 @@ const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
       title: '',
       author: '',
       composer: '',
+      type: 'song' as 'song' | 'hymn',
       category: '',
       lyrics: '',
+      englishLyrics: '',
+      yorubaLyrics: '',
+      hymnNumber: '',
       year: '',
       number: '',
       tags: '',
@@ -54,10 +62,31 @@ const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newSong.title || !newSong.lyrics || !newSong.category) {
+    const isHymn = newSong.type === 'hymn';
+    
+    // Validation based on type
+    if (!newSong.title || !newSong.category) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (isHymn && (!newSong.englishLyrics || !newSong.yorubaLyrics)) {
+      toast({
+        title: "Error",
+        description: "Please provide both English and Yoruba lyrics for hymns",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!isHymn && !newSong.lyrics) {
+      toast({
+        title: "Error",
+        description: "Please provide lyrics for the song",
         variant: "destructive",
       });
       return;
@@ -78,36 +107,43 @@ const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
       }
 
       // Create the item
-      const { data: itemData, error: itemError } = await supabase
+      const itemData = {
+        title: newSong.title,
+        author: newSong.author || null,
+        composer: newSong.composer || null,
+        type: newSong.type,
+        category_id: categoryData.id,
+        year_written: newSong.year ? parseInt(newSong.year) : null,
+        number: newSong.number ? parseInt(newSong.number) : null,
+        hymn_number: isHymn && newSong.hymnNumber ? parseInt(newSong.hymnNumber) : null,
+        english_lyrics: isHymn ? newSong.englishLyrics : null,
+        yoruba_lyrics: isHymn ? newSong.yorubaLyrics : null,
+        tags: newSong.tags ? newSong.tags.split(',').map(t => t.trim()) : [],
+      };
+
+      const { data: createdItem, error: itemError } = await supabase
         .from('items')
-        .insert({
-          title: newSong.title,
-          author: newSong.author || null,
-          composer: newSong.composer || null,
-          category_id: categoryData.id,
-          year_written: newSong.year ? parseInt(newSong.year) : null,
-          number: newSong.number ? parseInt(newSong.number) : null,
-          tags: newSong.tags ? newSong.tags.split(',').map(t => t.trim()) : [],
-        })
+        .insert(itemData)
         .select('id')
         .single();
 
       if (itemError) throw itemError;
 
-      // Create the primary version with lyrics
-      const { error: versionError } = await supabase
-        .from('item_versions')
-        .insert({
-          item_id: itemData.id,
-          lyrics: newSong.lyrics,
-          is_primary: true,
-        });
+      // For songs, create primary version with lyrics; hymns store lyrics directly
+      if (!isHymn) {
+        const { error: versionError } = await supabase
+          .from('item_versions')
+          .insert({
+            item_id: createdItem.id,
+            lyrics: newSong.lyrics,
+            is_primary: true,
+          });
 
-      if (versionError) throw versionError;
-
+        if (versionError) throw versionError;
+      }
       toast({
         title: "Success",
-        description: "Song added successfully",
+        description: `${newSong.type === 'hymn' ? 'Hymn' : 'Song'} added successfully`,
       });
 
       resetForm();
@@ -115,7 +151,7 @@ const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message || "Failed to add song",
+        description: error.message || `Failed to add ${newSong.type}`,
         variant: "destructive",
       });
     } finally {
@@ -167,7 +203,30 @@ const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
           <TabsContent value="add" className="p-6 pt-4">
             <ScrollArea className="h-[600px]">
               <form onSubmit={handleSubmit} className="space-y-6 pr-4">
-                {/* Required Fields Section */}
+                 {/* Type Selection */}
+                 <div className="border rounded-lg p-4 bg-primary/5">
+                   <h4 className="font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
+                     <span className="w-2 h-2 bg-primary rounded-full"></span>
+                     Content Type
+                   </h4>
+                   <div>
+                     <Label htmlFor="type" className="text-sm font-medium">Type *</Label>
+                     <Select value={newSong.type} onValueChange={(value: 'song' | 'hymn') => setNewSong({...newSong, type: value})}>
+                       <SelectTrigger className="mt-1">
+                         <SelectValue placeholder="Select type" />
+                       </SelectTrigger>
+                       <SelectContent>
+                         <SelectItem value="song">Song (Simple verse/chorus format)</SelectItem>
+                         <SelectItem value="hymn">Hymn (English/Yoruba bilingual)</SelectItem>
+                       </SelectContent>
+                     </Select>
+                     <p className="text-xs text-muted-foreground mt-1">
+                       Choose "Song" for simple format or "Hymn" for bilingual content
+                     </p>
+                   </div>
+                 </div>
+
+                 {/* Required Fields Section */}
                 <div className="border rounded-lg p-4 bg-muted/30">
                   <h4 className="font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
                     <span className="w-2 h-2 bg-destructive rounded-full"></span>
@@ -205,42 +264,93 @@ const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
                       </Select>
                       <p className="text-xs text-muted-foreground mt-1">Choose the most appropriate category</p>
                     </div>
-                    
-                    <div>
-                      <Label htmlFor="lyrics" className="text-sm font-medium">
-                        Lyrics *
-                      </Label>
-                      <Textarea
-                        id="lyrics"
-                        value={newSong.lyrics}
-                        onChange={(e) => setNewSong({...newSong, lyrics: e.target.value})}
-                        placeholder="Verse 1:&#10;Amazing grace, how sweet the sound&#10;That saved a wretch like me&#10;&#10;Chorus:&#10;[Enter chorus here]&#10;&#10;Verse 2:&#10;[Continue with verses]"
-                        className="min-h-[200px] mt-1 font-mono text-sm"
-                        required
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Use clear structure: "Verse 1:", "Chorus:", "Bridge:", etc. Separate sections with blank lines.
-                      </p>
-                    </div>
+                     
+                     {newSong.type === 'song' ? (
+                       <div>
+                         <Label htmlFor="lyrics" className="text-sm font-medium">
+                           Lyrics *
+                         </Label>
+                         <Textarea
+                           id="lyrics"
+                           value={newSong.lyrics}
+                           onChange={(e) => setNewSong({...newSong, lyrics: e.target.value})}
+                           placeholder="Verse 1:&#10;Amazing grace, how sweet the sound&#10;That saved a wretch like me&#10;&#10;Chorus:&#10;[Enter chorus here]&#10;&#10;Verse 2:&#10;[Continue with verses]"
+                           className="min-h-[200px] mt-1 font-mono text-sm"
+                           required
+                         />
+                         <p className="text-xs text-muted-foreground mt-1">
+                           Use clear structure: "Verse 1:", "Chorus:", "Bridge:", etc. Separate sections with blank lines.
+                         </p>
+                       </div>
+                     ) : (
+                       <div className="space-y-4">
+                         <div>
+                           <Label htmlFor="englishLyrics" className="text-sm font-medium">
+                             English Lyrics *
+                           </Label>
+                           <Textarea
+                             id="englishLyrics"
+                             value={newSong.englishLyrics}
+                             onChange={(e) => setNewSong({...newSong, englishLyrics: e.target.value})}
+                             placeholder="Verse 1:&#10;Amazing grace, how sweet the sound&#10;That saved a wretch like me&#10;&#10;Verse 2:&#10;[Continue with verses]"
+                             className="min-h-[150px] mt-1 font-mono text-sm"
+                             required
+                           />
+                         </div>
+                         <div>
+                           <Label htmlFor="yorubaLyrics" className="text-sm font-medium">
+                             Yoruba Lyrics *
+                           </Label>
+                           <Textarea
+                             id="yorubaLyrics"
+                             value={newSong.yorubaLyrics}
+                             onChange={(e) => setNewSong({...newSong, yorubaLyrics: e.target.value})}
+                             placeholder="Àfikún 1:&#10;[Yoruba lyrics here]&#10;&#10;Àfikún 2:&#10;[Continue with verses]"
+                             className="min-h-[150px] mt-1 font-mono text-sm"
+                             required
+                           />
+                         </div>
+                         <p className="text-xs text-muted-foreground">
+                           Both English and Yoruba versions are required for hymns. Use matching verse structures.
+                         </p>
+                       </div>
+                     )}
                   </div>
                 </div>
 
-                {/* Song Details Section */}
-                <div className="border rounded-lg p-4">
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-3">Song Details</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="number" className="text-sm font-medium">Hymn Number</Label>
-                      <Input
-                        id="number"
-                        type="number"
-                        value={newSong.number}
-                        onChange={(e) => setNewSong({...newSong, number: e.target.value})}
-                        placeholder="e.g., 123"
-                        className="mt-1"
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">Official hymnal number (if applicable)</p>
-                    </div>
+                 {/* Song Details Section */}
+                 <div className="border rounded-lg p-4">
+                   <h4 className="font-semibold text-sm text-muted-foreground mb-3">
+                     {newSong.type === 'hymn' ? 'Hymn Details' : 'Song Details'}
+                   </h4>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     {newSong.type === 'hymn' ? (
+                       <div>
+                         <Label htmlFor="hymnNumber" className="text-sm font-medium">Hymn Number</Label>
+                         <Input
+                           id="hymnNumber"
+                           type="number"
+                           value={newSong.hymnNumber}
+                           onChange={(e) => setNewSong({...newSong, hymnNumber: e.target.value})}
+                           placeholder="e.g., 123"
+                           className="mt-1"
+                         />
+                         <p className="text-xs text-muted-foreground mt-1">Official hymnal number for easy reference</p>
+                       </div>
+                     ) : (
+                       <div>
+                         <Label htmlFor="number" className="text-sm font-medium">Song Number</Label>
+                         <Input
+                           id="number"
+                           type="number"
+                           value={newSong.number}
+                           onChange={(e) => setNewSong({...newSong, number: e.target.value})}
+                           placeholder="e.g., 123"
+                           className="mt-1"
+                         />
+                         <p className="text-xs text-muted-foreground mt-1">Song number (if applicable)</p>
+                       </div>
+                     )}
                     
                     <div>
                       <Label htmlFor="year" className="text-sm font-medium">Year Written</Label>
@@ -307,24 +417,24 @@ const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
                   </div>
                 </div>
 
-                <div className="flex gap-2 sticky bottom-0 bg-background pt-4 border-t">
-                  <Button type="submit" disabled={isSubmitting} className="flex-1">
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Adding Song...
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Song
-                      </>
-                    )}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={resetForm}>
-                    Clear Form
-                  </Button>
-                </div>
+                 <div className="flex gap-2 sticky bottom-0 bg-background pt-4 border-t">
+                   <Button type="submit" disabled={isSubmitting} className="flex-1">
+                     {isSubmitting ? (
+                       <>
+                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                         Adding {newSong.type === 'hymn' ? 'Hymn' : 'Song'}...
+                       </>
+                     ) : (
+                       <>
+                         <Plus className="w-4 h-4 mr-2" />
+                         Add {newSong.type === 'hymn' ? 'Hymn' : 'Song'}
+                       </>
+                     )}
+                   </Button>
+                   <Button type="button" variant="outline" onClick={resetForm}>
+                     Clear Form
+                   </Button>
+                 </div>
               </form>
             </ScrollArea>
           </TabsContent>
@@ -347,38 +457,46 @@ const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
                       No songs found
                     </div>
                   ) : (
-                    songs.map((song) => (
-                      <Card key={song.id} className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className="font-medium">{song.title}</h4>
-                            {(song.author || song.composer) && (
-                              <p className="text-sm text-muted-foreground">
-                                {song.author && song.composer 
-                                  ? `${song.author} • ${song.composer}`
-                                  : song.author || song.composer
-                                }
-                              </p>
-                            )}
-                            <div className="flex items-center gap-2 mt-2">
-                              <Badge variant="outline">{song.category}</Badge>
-                              {song.year && <Badge variant="secondary">{song.year}</Badge>}
-                              {song.number && <Badge variant="secondary">#{song.number}</Badge>}
+                      songs.map((song) => (
+                        <Card key={song.id} className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-medium">{song.title}</h4>
+                              {(song.author || song.composer) && (
+                                <p className="text-sm text-muted-foreground">
+                                  {song.author && song.composer 
+                                    ? `${song.author} • ${song.composer}`
+                                    : song.author || song.composer
+                                  }
+                                </p>
+                              )}
+                              <div className="flex items-center gap-2 mt-2">
+                                <Badge variant="outline">{song.category}</Badge>
+                                <Badge variant="secondary" className="capitalize">
+                                  {song.type}
+                                </Badge>
+                                {song.year && <Badge variant="secondary">{song.year}</Badge>}
+                                {song.type === 'hymn' && song.hymnNumber && (
+                                  <Badge variant="secondary">Hymn #{song.hymnNumber}</Badge>
+                                )}
+                                {song.type === 'song' && song.number && (
+                                  <Badge variant="secondary">#{song.number}</Badge>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex gap-1 ml-4">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleDelete(song.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
                             </div>
                           </div>
-                          <div className="flex gap-1 ml-4">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleDelete(song.id)}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </Card>
-                    ))
+                        </Card>
+                      ))
                   )}
                 </div>
               </ScrollArea>

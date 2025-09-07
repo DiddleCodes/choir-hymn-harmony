@@ -96,6 +96,8 @@ export type Database = {
           category_id: string | null
           composer: string | null
           created_at: string | null
+          english_lyrics: string | null
+          hymn_number: number | null
           id: string
           is_active: boolean | null
           key_signature: string | null
@@ -105,9 +107,11 @@ export type Database = {
           tempo: string | null
           time_signature: string | null
           title: string
+          type: Database["public"]["Enums"]["item_type"]
           updated_at: string | null
           video_url: string | null
           year_written: number | null
+          yoruba_lyrics: string | null
         }
         Insert: {
           audio_url?: string | null
@@ -115,6 +119,8 @@ export type Database = {
           category_id?: string | null
           composer?: string | null
           created_at?: string | null
+          english_lyrics?: string | null
+          hymn_number?: number | null
           id?: string
           is_active?: boolean | null
           key_signature?: string | null
@@ -124,9 +130,11 @@ export type Database = {
           tempo?: string | null
           time_signature?: string | null
           title: string
+          type?: Database["public"]["Enums"]["item_type"]
           updated_at?: string | null
           video_url?: string | null
           year_written?: number | null
+          yoruba_lyrics?: string | null
         }
         Update: {
           audio_url?: string | null
@@ -134,6 +142,8 @@ export type Database = {
           category_id?: string | null
           composer?: string | null
           created_at?: string | null
+          english_lyrics?: string | null
+          hymn_number?: number | null
           id?: string
           is_active?: boolean | null
           key_signature?: string | null
@@ -143,9 +153,11 @@ export type Database = {
           tempo?: string | null
           time_signature?: string | null
           title?: string
+          type?: Database["public"]["Enums"]["item_type"]
           updated_at?: string | null
           video_url?: string | null
           year_written?: number | null
+          yoruba_lyrics?: string | null
         }
         Relationships: [
           {
@@ -310,6 +322,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      item_type: "song" | "hymn"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -438,6 +451,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      item_type: ["song", "hymn"],
     },
   },
 } as const

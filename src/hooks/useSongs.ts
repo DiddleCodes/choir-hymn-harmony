@@ -7,8 +7,15 @@ export interface Song {
   author?: string;
   composer?: string;
   category: string;
+  type: 'song' | 'hymn';
+  // For regular songs
   lyrics: string[];
   verses: number;
+  // For hymns
+  englishLyrics?: string[];
+  yorubaLyrics?: string[];
+  hymnNumber?: number;
+  // Common fields
   year?: number;
   tags: string[];
   number?: number;
@@ -37,8 +44,12 @@ export const useSongs = (searchTerm?: string, categoryId?: string) => {
           title,
           author,
           composer,
+          type,
           year_written,
           number,
+          hymn_number,
+          english_lyrics,
+          yoruba_lyrics,
           sheet_music_url,
           video_url,
           audio_url,
@@ -71,8 +82,12 @@ export const useSongs = (searchTerm?: string, categoryId?: string) => {
 
       // Transform the data to match our Song interface
       const songs: Song[] = (data || []).map(item => {
-        const lyrics = item.item_versions[0]?.lyrics || '';
-        const lyricsArray = lyrics.split('\n\n').filter(Boolean);
+        const isHymn = item.type === 'hymn';
+        
+        // For songs, use item_versions lyrics; for hymns, use dedicated columns
+        const lyrics = isHymn ? [] : (item.item_versions[0]?.lyrics || '').split('\n\n').filter(Boolean);
+        const englishLyrics = isHymn && item.english_lyrics ? item.english_lyrics.split('\n\n').filter(Boolean) : undefined;
+        const yorubaLyrics = isHymn && item.yoruba_lyrics ? item.yoruba_lyrics.split('\n\n').filter(Boolean) : undefined;
         
         return {
           id: item.id,
@@ -80,8 +95,12 @@ export const useSongs = (searchTerm?: string, categoryId?: string) => {
           author: item.author || undefined,
           composer: item.composer || undefined,
           category: item.categories?.name || 'traditional',
-          lyrics: lyricsArray,
-          verses: lyricsArray.length,
+          type: item.type as 'song' | 'hymn',
+          lyrics,
+          verses: lyrics.length,
+          englishLyrics,
+          yorubaLyrics,
+          hymnNumber: item.hymn_number || undefined,
           year: item.year_written || undefined,
           tags: item.tags || [],
           number: item.number || undefined,
