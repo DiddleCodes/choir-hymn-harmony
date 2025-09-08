@@ -8,13 +8,14 @@ import { useSongs, useCategories, type Song } from "@/hooks/useSongs";
 interface SongLibraryProps {
   searchTerm: string;
   onSongSelect: (song: Song) => void;
+  userRole?: 'admin' | 'choir_member' | 'guest' | null;
 }
 
-const SongLibrary = ({ searchTerm, onSongSelect }: SongLibraryProps) => {
+const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const { data: songs = [], isLoading } = useSongs(searchTerm, selectedCategory);
+  const { data: songs = [], isLoading } = useSongs(searchTerm, selectedCategory, userRole);
   const { data: categories = [] } = useCategories();
 
   const clearFilters = () => {

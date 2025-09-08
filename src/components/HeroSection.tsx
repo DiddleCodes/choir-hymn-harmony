@@ -30,8 +30,8 @@ const HeroSection = ({ searchTerm, onSearchChange }: HeroSectionProps) => {
             <span className="text-primary ml-4">Library</span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 font-light max-w-2xl mx-auto leading-relaxed">
-            A beautiful collection of hymns and worship songs for choirs, 
-            congregations, and hearts seeking divine melody.
+            A beautiful collection of Hymns and Songs for Congregational Worship, 
+            Choir and hearts seeking divine melody.
           </p>
         </div>
 
@@ -62,7 +62,7 @@ const HeroSection = ({ searchTerm, onSearchChange }: HeroSectionProps) => {
           </div>
           <div className="w-1 h-1 bg-white/40 rounded-full" />
           <div className="flex items-center gap-2">
-            <span className="font-medium">Sacred Collection</span>
+            <span className="font-medium">Song Collection</span>
           </div>
         </div>
       </div>

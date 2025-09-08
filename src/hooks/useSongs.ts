@@ -33,9 +33,9 @@ export interface Category {
   description?: string;
 }
 
-export const useSongs = (searchTerm?: string, categoryId?: string) => {
+export const useSongs = (searchTerm?: string, categoryId?: string, userRole?: 'admin' | 'choir_member' | 'guest' | null) => {
   return useQuery({
-    queryKey: ['songs', searchTerm, categoryId],
+    queryKey: ['songs', searchTerm, categoryId, userRole],
     queryFn: async () => {
       let query = supabase
         .from('items')
@@ -94,6 +94,11 @@ export const useSongs = (searchTerm?: string, categoryId?: string) => {
           
           return titleMatch || authorMatch || composerMatch || lyricsMatch || englishLyricsMatch || yorubaLyricsMatch;
         });
+      }
+
+      // Filter by user role (guests can only see hymns)
+      if (userRole === 'guest') {
+        filteredData = filteredData.filter(item => item.type === 'hymn');
       }
 
       // Transform the data to match our Song interface

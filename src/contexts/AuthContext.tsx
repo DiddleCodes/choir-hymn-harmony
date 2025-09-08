@@ -9,8 +9,11 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  requestChoirMembership: (email: string, fullName: string, message?: string) => Promise<{ error: any }>;
   loading: boolean;
   isAdmin: boolean;
+  isChoirMember: boolean;
+  userRole: 'admin' | 'choir_member' | 'guest' | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +31,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isChoirMember, setIsChoirMember] = useState(false);
+  const [userRole, setUserRole] = useState<'admin' | 'choir_member' | 'guest' | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -37,13 +42,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Check admin status when user changes
+        // Check user roles when user changes
         if (session?.user) {
           setTimeout(() => {
-            checkAdminStatus(session.user.id);
+            checkUserRoles(session.user.id);
           }, 0);
         } else {
           setIsAdmin(false);
+          setIsChoirMember(false);
+          setUserRole('guest'); // Default to guest for non-authenticated users
         }
       }
     );
@@ -54,7 +61,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        checkAdminStatus(session.user.id);
+        checkUserRoles(session.user.id);
+      } else {
+        setUserRole('guest'); // Default to guest for non-authenticated users
       }
       setLoading(false);
     });
@@ -62,18 +71,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const checkAdminStatus = async (userId: string) => {
+  const checkUserRoles = async (userId: string) => {
     try {
       const { data } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', userId)
-        .eq('role', 'admin')
-        .single();
+        .eq('user_id', userId);
       
-      setIsAdmin(!!data);
+      if (data && data.length > 0) {
+        const roles = data.map(item => item.role);
+        const isAdminUser = roles.includes('admin');
+        const isChoirMemberUser = roles.includes('choir_member');
+        
+        setIsAdmin(isAdminUser);
+        setIsChoirMember(isChoirMemberUser);
+        
+        // Set primary role (admin takes precedence)
+        if (isAdminUser) {
+          setUserRole('admin');
+        } else if (isChoirMemberUser) {
+          setUserRole('choir_member');
+        } else {
+          setUserRole('guest');
+        }
+      } else {
+        setIsAdmin(false);
+        setIsChoirMember(false);
+        setUserRole('guest');
+      }
     } catch (error) {
       setIsAdmin(false);
+      setIsChoirMember(false);
+      setUserRole('guest');
     }
   };
 
@@ -137,6 +166,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
+      setUserRole('guest'); // Reset to guest mode after signout
       toast({
         title: "Signed Out",
         description: "You have been successfully signed out.",
@@ -150,14 +180,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const requestChoirMembership = async (email: string, fullName: string, message?: string) => {
+    try {
+      const { error } = await supabase
+        .from('choir_member_requests')
+        .insert({
+          email,
+          full_name: fullName,
+          message,
+        });
+
+      if (error) {
+        toast({
+          title: "Request Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Request Submitted",
+          description: "Your choir membership request has been submitted. An admin will review it soon.",
+        });
+      }
+
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
   const value = {
     user,
     session,
     signIn,
     signUp,
     signOut,
+    requestChoirMembership,
     loading,
     isAdmin,
+    isChoirMember,
+    userRole,
   };
 
   return (
