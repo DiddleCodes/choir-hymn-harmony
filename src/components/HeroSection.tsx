@@ -26,8 +26,8 @@ const HeroSection = ({ searchTerm, onSearchChange }: HeroSectionProps) => {
         <div className="mb-8">
           <Music className="w-16 h-16 mx-auto mb-6 text-primary" />
           <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 text-white">
-            Sacred
-            <span className="text-primary ml-4">Songs</span>
+            Sanctuary's
+            <span className="text-primary ml-4">Library</span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 font-light max-w-2xl mx-auto leading-relaxed">
             A beautiful collection of hymns and worship songs for choirs, 

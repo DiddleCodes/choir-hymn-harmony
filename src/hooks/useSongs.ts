@@ -57,35 +57,52 @@ export const useSongs = (searchTerm?: string, categoryId?: string) => {
           time_signature,
           tempo,
           tags,
-          categories!inner(name),
-          item_versions!inner(
+          categories(name),
+          item_versions(
             lyrics,
             is_primary
           )
         `)
         .eq('is_active', true)
-        .eq('item_versions.is_primary', true);
-
-      // Filter by category if specified
-      if (categoryId && categoryId !== 'all') {
-        query = query.eq('categories.name', categoryId);
-      }
-
-      // Apply search filter if specified
-      if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,author.ilike.%${searchTerm}%,composer.ilike.%${searchTerm}%,item_versions.lyrics.ilike.%${searchTerm}%`);
-      }
 
       const { data, error } = await query;
 
       if (error) throw error;
 
+      // Filter the data on the client side to avoid JOIN issues
+      let filteredData = data || [];
+
+      // Filter by category if specified
+      if (categoryId && categoryId !== 'all') {
+        filteredData = filteredData.filter(item => 
+          item.categories?.name?.toLowerCase() === categoryId.toLowerCase()
+        );
+      }
+
+      // Apply search filter if specified
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        filteredData = filteredData.filter(item => {
+          const titleMatch = item.title?.toLowerCase().includes(searchLower);
+          const authorMatch = item.author?.toLowerCase().includes(searchLower);
+          const composerMatch = item.composer?.toLowerCase().includes(searchLower);
+          const lyricsMatch = item.item_versions?.some(version => 
+            version.lyrics?.toLowerCase().includes(searchLower)
+          );
+          const englishLyricsMatch = item.english_lyrics?.toLowerCase().includes(searchLower);
+          const yorubaLyricsMatch = item.yoruba_lyrics?.toLowerCase().includes(searchLower);
+          
+          return titleMatch || authorMatch || composerMatch || lyricsMatch || englishLyricsMatch || yorubaLyricsMatch;
+        });
+      }
+
       // Transform the data to match our Song interface
-      const songs: Song[] = (data || []).map(item => {
+      const songs: Song[] = filteredData.map(item => {
         const isHymn = item.type === 'hymn';
         
         // For songs, use item_versions lyrics; for hymns, use dedicated columns
-        const lyrics = isHymn ? [] : (item.item_versions[0]?.lyrics || '').split('\n\n').filter(Boolean);
+        const primaryVersion = item.item_versions?.find(v => v.is_primary) || item.item_versions?.[0];
+        const lyrics = isHymn ? [] : (primaryVersion?.lyrics || '').split('\n\n').filter(Boolean);
         const englishLyrics = isHymn && item.english_lyrics ? item.english_lyrics.split('\n\n').filter(Boolean) : undefined;
         const yorubaLyrics = isHymn && item.yoruba_lyrics ? item.yoruba_lyrics.split('\n\n').filter(Boolean) : undefined;
         

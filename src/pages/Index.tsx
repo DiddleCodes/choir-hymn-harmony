@@ -7,6 +7,7 @@ import HeroSection from "@/components/HeroSection";
 import SongLibrary from "@/components/SongLibrary";
 import SongModal from "@/components/SongModal";
 import AdminButton from "@/components/AdminButton";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import type { Song } from "@/hooks/useSongs";
 
 const Index = () => {
@@ -27,6 +28,7 @@ const Index = () => {
       {/* Navigation */}
       <nav className="absolute top-0 right-0 z-50 p-6">
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           {user ? (
             <AdminButton />
           ) : (
