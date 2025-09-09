@@ -68,7 +68,7 @@ export function ThemeProvider({
         .from('user_theme_preferences')
         .select('theme_name')
         .eq('user_id', user?.id)
-        .single()
+        .maybeSingle()
 
       if (data?.theme_name) {
         const themeName = data.theme_name as ColorTheme
