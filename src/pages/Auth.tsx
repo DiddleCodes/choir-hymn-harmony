@@ -40,6 +40,8 @@ const Auth = () => {
     }
   };
 
+  // Commented out sign up functionality for now
+  /*
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -50,6 +52,7 @@ const Auth = () => {
       setIsLoading(false);
     }
   };
+  */
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
@@ -62,7 +65,7 @@ const Auth = () => {
             </div>
           </div>
           <h1 className="text-3xl font-display font-bold text-foreground">Sanctuary's Library</h1>
-          <p className="text-muted-foreground mt-2">Access your hymnal library</p>
+          <p className="text-muted-foreground mt-2">Access your hymnal & song library</p>
         </div>
 
         {/* Auth Form */}
@@ -70,10 +73,51 @@ const Auth = () => {
           <CardHeader>
             <CardTitle className="text-center font-display">Welcome</CardTitle>
             <CardDescription className="text-center">
-              Sign in to access the full song library or create an account
+              Sign in to access the full song library
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Removed Tabs - showing only Sign In form */}
+            <form onSubmit={handleSignIn} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="signin-email">Email</Label>
+                <Input
+                  id="signin-email"
+                  name="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signin-password">Password</Label>
+                <Input
+                  id="signin-password"
+                  name="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  'Sign In'
+                )}
+              </Button>
+            </form>
+
+            {/* Commented out Tabs structure with Sign Up
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
@@ -162,6 +206,7 @@ const Auth = () => {
                 </form>
               </TabsContent>
             </Tabs>
+            */}
           </CardContent>
         </Card>
 

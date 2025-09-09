@@ -44,9 +44,9 @@ const HeroSection = ({ searchTerm, onSearchChange }: HeroSectionProps) => {
               placeholder="Search hymns, songs, or lyrics..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-12 pr-4 py-6 text-lg bg-white/95 backdrop-blur-sm border-0 shadow-sacred rounded-2xl 
+              className="pl-12 pr-4 py-6 text-lg bg-white border-0 shadow-sacred rounded-2xl 
               focus:ring-2 focus:ring-primary/50 
-              text-black placeholder:text-muted-foreground w-full"
+              text-gray-900 placeholder:text-gray-500 w-full font-medium"
             />
           </div>
         </div>
