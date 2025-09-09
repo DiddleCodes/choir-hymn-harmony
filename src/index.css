@@ -265,6 +265,9 @@
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
 /* Bass clef loader animation */
 .bass-clef-loader {
   animation: bassClefSpin 1.5s ease-in-out infinite;

@@ -302,22 +302,24 @@ const AdminDialog = ({ open, onClose, userRole }: AdminDialogProps) => {
                              required
                            />
                          </div>
-                         <div>
-                           <Label htmlFor="yorubaLyrics" className="text-sm font-medium">
-                             Yoruba Lyrics *
-                           </Label>
-                           <Textarea
-                             id="yorubaLyrics"
-                             value={newSong.yorubaLyrics}
-                             onChange={(e) => setNewSong({...newSong, yorubaLyrics: e.target.value})}
-                             placeholder="Àfikún 1:&#10;[Yoruba lyrics here]&#10;&#10;Àfikún 2:&#10;[Continue with verses]"
-                             className="min-h-[150px] mt-1 font-mono text-sm"
-                             required
-                           />
-                         </div>
-                         <p className="text-xs text-muted-foreground">
-                           Both English and Yoruba versions are required for hymns. Use matching verse structures.
-                         </p>
+                          <div>
+                            <Label htmlFor="yorubaLyrics" className="text-sm font-medium">
+                              Yoruba/Other Language Lyrics *
+                            </Label>
+                            <Textarea
+                              id="yorubaLyrics"
+                              value={newSong.yorubaLyrics}
+                              onChange={(e) => setNewSong({...newSong, yorubaLyrics: e.target.value})}
+                              placeholder="Àfikún 1:&#10;[Yoruba or other language lyrics here]&#10;&#10;Àfikún 2:&#10;[Continue with verses]"
+                              className="min-h-[150px] mt-1 font-mono text-sm"
+                              style={{ fontFamily: 'monospace, "Noto Sans", "Arial Unicode MS"' }}
+                              lang="yo"
+                              required
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Both English and Yoruba/other language versions are required for hymns. The text field supports all Unicode languages including Yoruba, Arabic, Chinese, etc. Use matching verse structures.
+                          </p>
                        </div>
                      )}
                   </div>
