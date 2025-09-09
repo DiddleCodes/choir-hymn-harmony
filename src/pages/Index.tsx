@@ -8,6 +8,7 @@ import SongLibrary from "@/components/SongLibrary";
 import SongModal from "@/components/SongModal";
 import AdminButton from "@/components/AdminButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeSelector } from "@/components/ThemeSelector";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ChoirMembershipRequest from "@/components/ChoirMembershipRequest";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -33,6 +34,7 @@ const Index = () => {
         {/* Navigation */}
         <nav className="fixed top-0 right-0 z-50 p-4 md:p-6 mobile-slide-up">
           <div className="flex items-center gap-2 md:gap-3">
+            <ThemeSelector />
             <ThemeToggle />
             {user ? (
               <AdminButton />
