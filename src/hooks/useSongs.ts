@@ -57,6 +57,7 @@ export const useSongs = (searchTerm?: string, categoryId?: string, userRole?: 'a
           time_signature,
           tempo,
           tags,
+          created_at,
           categories(name),
           item_versions(
             lyrics,
@@ -64,6 +65,7 @@ export const useSongs = (searchTerm?: string, categoryId?: string, userRole?: 'a
           )
         `)
         .eq('is_active', true)
+        .order('created_at', { ascending: false })
 
       const { data, error } = await query;
 
@@ -80,20 +82,41 @@ export const useSongs = (searchTerm?: string, categoryId?: string, userRole?: 'a
       }
 
       // Apply search filter if specified
-      if (searchTerm) {
-        const searchLower = searchTerm.toLowerCase();
-        filteredData = filteredData.filter(item => {
-          const titleMatch = item.title?.toLowerCase().includes(searchLower);
-          const authorMatch = item.author?.toLowerCase().includes(searchLower);
-          const composerMatch = item.composer?.toLowerCase().includes(searchLower);
-          const lyricsMatch = item.item_versions?.some(version => 
-            version.lyrics?.toLowerCase().includes(searchLower)
-          );
-          const englishLyricsMatch = item.english_lyrics?.toLowerCase().includes(searchLower);
-          const yorubaLyricsMatch = item.yoruba_lyrics?.toLowerCase().includes(searchLower);
-          
-          return titleMatch || authorMatch || composerMatch || lyricsMatch || englishLyricsMatch || yorubaLyricsMatch;
-        });
+      if (searchTerm && searchTerm.trim()) {
+        const searchLower = searchTerm.trim().toLowerCase();
+        
+        if (userRole === 'guest') {
+          // Guests can only search hymns by number or english lyrics
+          filteredData = filteredData.filter(item => {
+            if (item.type !== 'hymn') return false;
+            
+            // Check hymn number match
+            const hymnNumberMatch = item.hymn_number && item.hymn_number.toString() === searchTerm.trim();
+            
+            // Check english lyrics match
+            const englishLyricsMatch = item.english_lyrics?.toLowerCase().includes(searchLower);
+            
+            return hymnNumberMatch || englishLyricsMatch;
+          });
+        } else {
+          // For authenticated users, search in all fields
+          filteredData = filteredData.filter(item => {
+            const titleMatch = item.title?.toLowerCase().includes(searchLower);
+            const authorMatch = item.author?.toLowerCase().includes(searchLower);
+            const composerMatch = item.composer?.toLowerCase().includes(searchLower);
+            const lyricsMatch = item.item_versions?.some(version => 
+              version.lyrics?.toLowerCase().includes(searchLower)
+            );
+            const englishLyricsMatch = item.english_lyrics?.toLowerCase().includes(searchLower);
+            const yorubaLyricsMatch = item.yoruba_lyrics?.toLowerCase().includes(searchLower);
+            
+            // Check for number match (hymn number or song number)
+            const hymnNumberMatch = item.hymn_number && item.hymn_number.toString() === searchTerm.trim();
+            const songNumberMatch = item.number && item.number.toString() === searchTerm.trim();
+            
+            return titleMatch || authorMatch || composerMatch || lyricsMatch || englishLyricsMatch || yorubaLyricsMatch || hymnNumberMatch || songNumberMatch;
+          });
+        }
       }
 
       // Filter by user role (guests can only see hymns)
@@ -102,7 +125,7 @@ export const useSongs = (searchTerm?: string, categoryId?: string, userRole?: 'a
       }
 
       // Transform the data to match our Song interface
-      const songs: Song[] = filteredData.map(item => {
+      let songs: Song[] = filteredData.map(item => {
         const isHymn = item.type === 'hymn';
         
         // For songs, use item_versions lyrics; for hymns, use dedicated columns
@@ -135,6 +158,11 @@ export const useSongs = (searchTerm?: string, categoryId?: string, userRole?: 'a
         };
       });
 
+      // For "All Songs" filter without search, show only 2 most recent items for authenticated users
+      if (categoryId === 'all' && (!searchTerm || !searchTerm.trim()) && userRole !== 'guest') {
+        songs = songs.slice(0, 2);
+      }
+
       return songs;
     },
   });
@@ -153,7 +181,7 @@ export const useCategories = () => {
 
       // Add "All Songs" category
       const categories = [
-        { id: 'all', name: 'All Songs', description: 'All available songs' },
+        { id: 'all', name: 'All songs', description: 'All available songs' },
         ...(data || []).map(cat => ({
           id: cat.name.toLowerCase(),
           name: cat.name,

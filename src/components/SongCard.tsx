@@ -3,13 +3,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Music, Calendar, User, FileText } from "lucide-react";
 import type { Song } from "@/hooks/useSongs";
+import { toSentenceCase } from "@/utils/textUtils";
 
 interface SongCardProps {
   song: Song;
   onSelect: (song: Song) => void;
+  searchTerm?: string;
 }
 
-const SongCard = ({ song, onSelect }: SongCardProps) => {
+const SongCard = ({ song, onSelect, searchTerm = "" }: SongCardProps) => {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'traditional': return 'bg-primary/10 text-primary border-primary/20';
@@ -26,7 +28,14 @@ const SongCard = ({ song, onSelect }: SongCardProps) => {
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <CardTitle className="text-lg font-display group-hover:text-primary transition-gentle line-clamp-2">
-              {song.title}
+              <span dangerouslySetInnerHTML={{ 
+                __html: searchTerm 
+                  ? toSentenceCase(song.title).replace(
+                      new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+                      '<mark class="bg-primary/20 text-primary rounded px-1">$1</mark>'
+                    )
+                  : toSentenceCase(song.title)
+              }} />
             </CardTitle>
             {(song.author || song.composer) && (
               <div className="flex items-center gap-1 mt-2 text-sm text-muted-foreground">
@@ -42,7 +51,7 @@ const SongCard = ({ song, onSelect }: SongCardProps) => {
           </div>
           <div className="flex flex-col gap-2 items-end">
             <Badge variant="outline" className={getCategoryColor(song.category)}>
-              {song.category}
+              {toSentenceCase(song.category)}
             </Badge>
             {song.type === 'hymn' && song.hymnNumber && (
               <Badge variant="secondary" className="text-xs">

@@ -27,36 +27,36 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="absolute top-0 right-0 z-50 p-6">
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          {user ? (
-            <AdminButton />
-          ) : (
-            <div className="flex items-center gap-2">
-              {userRole === 'guest' && (
+      <div className="min-h-screen bg-background">
+        {/* Navigation */}
+        <nav className="fixed top-0 right-0 z-50 p-4 md:p-6">
+          <div className="flex items-center gap-2 md:gap-3">
+            <ThemeToggle />
+            {user ? (
+              <AdminButton />
+            ) : (
+              <div className="flex items-center gap-2">
                 <Button
                   size="sm"
                   variant="outline"
+                  asChild
                   className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-                  onClick={() => setShowChoirRequest(true)}
                 >
-                  <Users className="w-4 h-4 mr-2" />
-                  Join Choir
+                  <Link to="/choir-signup">
+                    <Users className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Choir Member</span>
+                  </Link>
                 </Button>
-              )}
-              <Button asChild variant="outline" size="sm" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20">
-                <Link to="/auth">
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Sign In
-                </Link>
-              </Button>
-            </div>
-          )}
-        </div>
-      </nav>
+                <Button asChild variant="outline" size="sm" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20">
+                  <Link to="/auth">
+                    <LogIn className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Sign In</span>
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </nav>
 
       <HeroSection 
         searchTerm={searchTerm}

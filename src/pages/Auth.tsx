@@ -61,7 +61,7 @@ const Auth = () => {
               <Music className="w-8 h-8 text-primary" />
             </div>
           </div>
-          <h1 className="text-3xl font-display font-bold text-foreground">Sacred Songs</h1>
+          <h1 className="text-3xl font-display font-bold text-foreground">Sanctuary's Library</h1>
           <p className="text-muted-foreground mt-2">Access your hymnal library</p>
         </div>
 
@@ -70,7 +70,7 @@ const Auth = () => {
           <CardHeader>
             <CardTitle className="text-center font-display">Welcome</CardTitle>
             <CardDescription className="text-center">
-              Sign in to access the admin features or create an account
+              Sign in to access the full song library or create an account
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -167,8 +167,8 @@ const Auth = () => {
 
         {/* Footer */}
         <div className="text-center mt-6 text-sm text-muted-foreground">
-          <p>Only administrators can upload songs.</p>
-          <p>Everyone else can browse and search the collection.</p>
+          <p>Choir members have access to the full library.</p>
+          <p>Guests can browse hymns without signing up.</p>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { X, Music, User, Calendar, FileText, Heart, Share2, Languages, Globe } from "lucide-react";
 import { useState } from "react";
 import type { Song } from "@/hooks/useSongs";
+import { toSentenceCase } from "@/utils/textUtils";
 
 interface SongModalProps {
   song: Song | null;
@@ -36,7 +37,7 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
               <DialogTitle className="text-2xl font-display font-semibold mb-2 pr-8">
-                {song.title}
+                {toSentenceCase(song.title)}
               </DialogTitle>
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 {song.author && (
@@ -60,7 +61,7 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
               </div>
               <div className="flex items-center gap-3 mt-3">
                 <Badge variant="outline" className={getCategoryColor(song.category)}>
-                  {song.category}
+                  {toSentenceCase(song.category)}
                 </Badge>
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <FileText className="w-4 h-4" />

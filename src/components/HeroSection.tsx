@@ -21,22 +21,22 @@ const HeroSection = ({ searchTerm, onSearchChange }: HeroSectionProps) => {
         <div className="absolute inset-0 bg-gradient-to-b from-sacred-deep/70 via-sacred-deep/50 to-background/90" />
       </div>
       
-      {/* Content */}
+      {/* Content - Mobile Responsive */}
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-        <div className="mb-8">
-          <Music className="w-16 h-16 mx-auto mb-6 text-primary" />
-          <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 text-white">
+        <div className="mb-6 md:mb-8">
+          <Music className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 md:mb-6 text-primary" />
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-bold mb-4 md:mb-6 text-white">
             Sanctuary's
-            <span className="text-primary ml-4">Library</span>
+            <span className="text-primary ml-2 md:ml-4">Library</span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 font-light max-w-2xl mx-auto leading-relaxed">
-            A beautiful collection of Hymns and Songs for Congregational Worship, 
+          <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light max-w-2xl mx-auto leading-relaxed">
+            A beautiful collection of Hymns and Songs for Worship, 
             Choir and hearts seeking divine melody.
           </p>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative max-w-2xl mx-auto">
+        {/* Search Bar - Mobile Responsive */}
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-0">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <Input
@@ -44,25 +44,26 @@ const HeroSection = ({ searchTerm, onSearchChange }: HeroSectionProps) => {
               placeholder="Search hymns, songs, or lyrics..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-12 pr-4 py-6 text-lg bg-white/95 backdrop-blur-sm border-0 shadow-sacred rounded-2xl focus:ring-2 focus:ring-primary/50"
+              className="pl-12 pr-4 py-6 text-lg bg-white/95 backdrop-blur-sm border-0 shadow-sacred rounded-2xl focus:ring-2 focus:ring-primary/50 text-foreground placeholder:text-muted-foreground w-full"
             />
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="flex justify-center items-center gap-8 mt-12 text-white/80">
+        {/* Quick Stats - Mobile Responsive */}
+        <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mt-12 text-white/80 px-4">
           <div className="flex items-center gap-2">
             <Heart className="w-5 h-5 text-primary" />
-            <span className="font-medium">Timeless Hymns</span>
+            <span className="font-medium text-sm md:text-base">Timeless Hymns</span>
           </div>
-          <div className="w-1 h-1 bg-white/40 rounded-full" />
+          <div className="w-1 h-1 bg-white/40 rounded-full hidden sm:block" />
           <div className="flex items-center gap-2">
             <Music className="w-5 h-5 text-primary" />
-            <span className="font-medium">Beautiful Lyrics</span>
+            <span className="font-medium text-sm md:text-base">Beautiful Lyrics</span>
           </div>
-          <div className="w-1 h-1 bg-white/40 rounded-full" />
+          <div className="w-1 h-1 bg-white/40 rounded-full hidden sm:block" />
           <div className="flex items-center gap-2">
-            <span className="font-medium">Song Collection</span>
+            <Music className="w-5 h-5 text-primary" />
+            <span className="font-medium text-sm md:text-base">Song Collection</span>
           </div>
         </div>
       </div>
