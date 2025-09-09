@@ -43,15 +43,22 @@ const ChoirRequestsAdmin = () => {
 
   const handleApprove = async (requestId) => {
     try {
+      // First, get the current user ID for reviewed_by
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const { error } = await supabase
         .from('choir_member_requests')
         .update({ 
           status: 'approved',
-          reviewed_at: new Date().toISOString()
+          reviewed_at: new Date().toISOString(),
+          reviewed_by: user?.id || null
         })
         .eq('id', requestId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Approval error:', error);
+        throw error;
+      }
 
       toast({
         title: "Request Approved",
@@ -61,9 +68,10 @@ const ChoirRequestsAdmin = () => {
       fetchRequests();
       setActionDialog({ open: false, type: null });
     } catch (error) {
+      console.error('Error approving request:', error);
       toast({
         title: "Error",
-        description: "Failed to approve request",
+        description: `Failed to approve request: ${error.message}`,
         variant: "destructive",
       });
     }

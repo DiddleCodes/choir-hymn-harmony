@@ -10,9 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@radix-ui/react-dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader } from '@/components/ui/dialog';
 import ChoirRequestsAdmin from './ui/choirRequestsAdmin';
-import { DialogHeader } from './ui/dialog';
 
 const AdminButton = () => {
   const { user, isAdmin, signOut } = useAuth();
@@ -58,16 +57,18 @@ const AdminButton = () => {
             onClose={() => setShowAdminDialog(false)}
           />
           
-          {/* Choir Requests Dialog */}
+          {/* Fixed Choir Requests Dialog with proper styling */}
           <Dialog open={showChoirRequests} onOpenChange={setShowChoirRequests}>
-            <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Manage Choir Requests</DialogTitle>
-                <DialogDescription>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
+              <DialogHeader className="flex-shrink-0 pb-4 border-b">
+                <DialogTitle className="text-2xl font-display">Manage Choir Requests</DialogTitle>
+                <DialogDescription className="text-muted-foreground">
                   Review and approve or reject choir membership requests
                 </DialogDescription>
               </DialogHeader>
-              <ChoirRequestsAdmin />
+              <div className="flex-1 overflow-y-auto p-1">
+                <ChoirRequestsAdmin />
+              </div>
             </DialogContent>
           </Dialog>
         </>
