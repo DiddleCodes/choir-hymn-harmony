@@ -9,6 +9,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: any }>;
   requestChoirMembership: (email: string, fullName: string, message?: string) => Promise<{ error: any }>;
   loading: boolean;
   isSuperAdmin: boolean;
@@ -220,6 +221,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      const redirectUrl = `${window.location.origin}/reset-password`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        toast({
+          title: "Reset Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Reset Link Sent",
+          description: "Check your email for a password reset link.",
+        });
+      }
+
+      return { error };
+    } catch (error) {
+      toast({
+        title: "Reset Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+      return { error };
+    }
+  };
+
   const requestChoirMembership = async (email: string, fullName: string, message?: string) => {
     try {
       // Validate inputs before sending to prevent security issues
@@ -290,6 +323,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signUp,
     signOut,
+    resetPassword,
     requestChoirMembership,
     loading,
     isSuperAdmin,

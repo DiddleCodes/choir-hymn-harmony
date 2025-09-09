@@ -10,6 +10,7 @@ import AdminButton from "@/components/AdminButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ChoirMembershipRequest from "@/components/ChoirMembershipRequest";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { Song } from "@/hooks/useSongs";
 
 const Index = () => {
@@ -17,6 +18,7 @@ const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [showChoirRequest, setShowChoirRequest] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleSongSelect = (song: Song) => {
     setSelectedSong(song);
@@ -62,11 +64,15 @@ const Index = () => {
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
       />
-      <SongLibrary 
-        searchTerm={searchTerm}
-        onSongSelect={handleSongSelect}
-        userRole={userRole}
-      />
+      
+      {/* Only show Song Library section on desktop to avoid duplication on mobile */}
+      {!isMobile && (
+        <SongLibrary 
+          searchTerm={searchTerm}
+          onSongSelect={handleSongSelect}
+          userRole={userRole}
+        />
+      )}
       <SongModal 
         song={selectedSong}
         isOpen={!!selectedSong}

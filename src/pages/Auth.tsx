@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -104,6 +104,12 @@ const Auth = () => {
                   required
                   disabled={isLoading}
                 />
+              </div>
+              
+              <div className="text-right">
+                <Button asChild variant="link" className="px-0 text-sm">
+                  <Link to="/forgot-password">Forgot password?</Link>
+                </Button>
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
