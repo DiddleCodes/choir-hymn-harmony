@@ -15,7 +15,7 @@ const ChoirSignup = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    // message: '', // Commented out for now
+    password: '',
   });
 
   // Redirect if already authenticated
@@ -39,8 +39,7 @@ const ChoirSignup = () => {
       const { error } = await requestChoirMembership(
         formData.email, 
         formData.fullName, 
-        '' // Pass empty string for message
-        // formData.message // Original message field
+        formData.password
       );
       if (!error) {
         setSubmitted(true);
@@ -134,20 +133,19 @@ const ChoirSignup = () => {
                 />
               </div>
               
-              {/* Commented out message field for now
               <div className="space-y-2">
-                <Label htmlFor="message">Message (Optional)</Label>
-                <Textarea
-                  id="message"
-                  name="message"
-                  placeholder="Tell us why you'd like to join the choir..."
-                  value={formData.message}
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Create a password"
+                  value={formData.password}
                   onChange={handleInputChange}
+                  required
                   disabled={isLoading}
-                  rows={3}
                 />
               </div>
-              */}
               
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (

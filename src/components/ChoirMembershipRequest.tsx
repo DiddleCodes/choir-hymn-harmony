@@ -15,7 +15,7 @@ const ChoirMembershipRequest = ({ onClose }: ChoirMembershipRequestProps) => {
   const [formData, setFormData] = useState({
     email: "",
     fullName: "",
-    // message: "", // Commented out for now
+    password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const { requestChoirMembership } = useAuth();
@@ -32,8 +32,7 @@ const ChoirMembershipRequest = ({ onClose }: ChoirMembershipRequestProps) => {
     const { error } = await requestChoirMembership(
       formData.email,
       formData.fullName,
-      "" // Pass empty string for message
-      // formData.message // Original message field
+      formData.password
     );
     
     if (!error) {
@@ -85,19 +84,18 @@ const ChoirMembershipRequest = ({ onClose }: ChoirMembershipRequestProps) => {
             />
           </div>
           
-          {/* Commented out message field for now
           <div className="space-y-2">
-            <Label htmlFor="message">Message (Optional)</Label>
-            <Textarea
-              id="message"
-              name="message"
-              value={formData.message}
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              value={formData.password}
               onChange={handleInputChange}
-              placeholder="Tell us why you'd like to join the choir..."
-              rows={3}
+              required
+              placeholder="Create a password"
             />
           </div>
-          */}
           
           <div className="flex gap-2 pt-4">
             <Button

@@ -10,7 +10,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
-  requestChoirMembership: (email: string, fullName: string, message?: string) => Promise<{ error: any }>;
+  requestChoirMembership: (email: string, fullName: string, password: string) => Promise<{ error: any }>;
   loading: boolean;
   isSuperAdmin: boolean;
   isAdmin: boolean;
@@ -253,11 +253,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const requestChoirMembership = async (email: string, fullName: string, message?: string) => {
+  const requestChoirMembership = async (email: string, fullName: string, password: string) => {
     try {
       // Validate inputs before sending to prevent security issues
       const trimmedName = fullName.trim();
       const trimmedEmail = email.trim();
+      const trimmedPassword = password.trim();
       
       if (!trimmedName || trimmedName.length < 2) {
         const error = new Error("Full name must be at least 2 characters long");
@@ -279,30 +280,56 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
 
+      if (!trimmedPassword || trimmedPassword.length < 6) {
+        const error = new Error("Password must be at least 6 characters long");
+        toast({
+          title: "Invalid Password",
+          description: "Please enter a password with at least 6 characters",
+          variant: "destructive",
+        });
+        return { error };
+      }
+
+      // Create the user account but they won't be able to login until approved
+      const { error: authError } = await supabase.auth.signUp({
+        email: trimmedEmail,
+        password: trimmedPassword,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            full_name: trimmedName,
+          }
+        }
+      });
+
+      if (authError) {
+        toast({
+          title: "Account Creation Failed",
+          description: authError.message,
+          variant: "destructive",
+        });
+        return { error: authError };
+      }
+
+      // Create the choir member request
       const { error } = await supabase
         .from('choir_member_requests')
         .insert({
           email: trimmedEmail,
           full_name: trimmedName,
-          message: message?.trim() || null,
+          message: null,
         });
 
       if (error) {
-        // Provide user-friendly error messages for common validation failures
-        let errorMessage = error.message;
-        if (error.message.includes('row-level security')) {
-          errorMessage = "Unable to submit request. Please check your information and try again.";
-        }
-        
         toast({
           title: "Request Failed",
-          description: errorMessage,
+          description: "Unable to submit request. Please try again.",
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Request Submitted",
-          description: "Your choir membership request has been submitted. A super admin will review it soon.",
+          title: "Account Created & Request Submitted",
+          description: "Your account has been created and your choir membership request has been submitted. You'll be able to sign in once approved.",
         });
       }
 
