@@ -15,7 +15,7 @@ const ChoirSignup = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    message: '',
+    // message: '', // Commented out for now
   });
 
   // Redirect if already authenticated
@@ -36,7 +36,12 @@ const ChoirSignup = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await requestChoirMembership(formData.email, formData.fullName, formData.message);
+      const { error } = await requestChoirMembership(
+        formData.email, 
+        formData.fullName, 
+        '' // Pass empty string for message
+        // formData.message // Original message field
+      );
       if (!error) {
         setSubmitted(true);
       }
@@ -128,6 +133,8 @@ const ChoirSignup = () => {
                   disabled={isLoading}
                 />
               </div>
+              
+              {/* Commented out message field for now
               <div className="space-y-2">
                 <Label htmlFor="message">Message (Optional)</Label>
                 <Textarea
@@ -140,6 +147,8 @@ const ChoirSignup = () => {
                   rows={3}
                 />
               </div>
+              */}
+              
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>
