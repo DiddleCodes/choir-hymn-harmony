@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Palette, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -10,17 +10,17 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/contexts/AuthContext"
-import { supabase } from "@/integrations/supabase/client"
+import { useTheme } from "@/components/ThemeProvider"
 import { useToast } from "@/hooks/use-toast"
 
-type ColorTheme = "sacred-gold" | "burgundy-gold" | "forest-cream" | "navy-amber"
+type ColorTheme = "default" | "burgundy-gold" | "forest-cream" | "navy-amber"
 
 const themes = [
   {
-    id: "sacred-gold" as ColorTheme,
-    name: "Sacred Gold",
+    id: "default" as ColorTheme,
+    name: "Default",
     description: "Warm gold and cream - classic hymnal elegance",
-    preview: "bg-gradient-to-r from-amber-100 to-amber-200 border-amber-300"
+    preview: "bg-gradient-to-r from-primary/20 to-accent/30 border-primary/40"
   },
   {
     id: "burgundy-gold" as ColorTheme,
@@ -45,85 +45,24 @@ const themes = [
 export function ThemeSelector() {
   const { user } = useAuth()
   const { toast } = useToast()
-  const [currentTheme, setCurrentTheme] = useState<ColorTheme>("sacred-gold")
+  const { colorTheme, setColorTheme } = useTheme()
   const [loading, setLoading] = useState(false)
 
-  // Load user's theme preference
-  useEffect(() => {
-    if (user) {
-      loadUserTheme()
-    }
-  }, [user])
-
-  const loadUserTheme = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('user_theme_preferences')
-        .select('theme_name')
-        .eq('user_id', user?.id)
-        .single()
-
-      if (data && !error) {
-        const themeName = data.theme_name as ColorTheme
-        setCurrentTheme(themeName)
-        applyTheme(themeName)
-      }
-    } catch (error) {
-      console.error('Error loading theme:', error)
-    }
-  }
-
-  const applyTheme = (theme: ColorTheme) => {
-    const root = document.documentElement
-    
-    // Remove existing theme attributes
-    root.removeAttribute('data-theme')
-    
-    // Apply new theme (sacred-gold is default, no attribute needed)
-    if (theme !== 'sacred-gold') {
-      root.setAttribute('data-theme', theme)
-    }
-  }
-
-  const saveTheme = async (theme: ColorTheme) => {
+  const handleThemeChange = (theme: ColorTheme) => {
     if (!user) {
       toast({
         title: "Sign in required",
-        description: "Please sign in to save your theme preference.",
+        description: "Please sign in to use custom themes.",
         variant: "destructive",
       })
       return
     }
 
-    setLoading(true)
-    try {
-      const { error } = await supabase
-        .from('user_theme_preferences')
-        .upsert({
-          user_id: user.id,
-          theme_name: theme,
-          updated_at: new Date().toISOString(),
-        })
-
-      if (error) throw error
-
-      setCurrentTheme(theme)
-      applyTheme(theme)
-      
-      toast({
-        title: "Theme saved",
-        description: `Switched to ${themes.find(t => t.id === theme)?.name} theme.`,
-      })
-    } catch (error) {
-      console.error('Error saving theme:', error)
-      toast({
-        title: "Error saving theme",
-        description: "Please try again later.",
-        variant: "destructive",
-      })
-    } finally {
-      setLoading(false)
-    }
+    setColorTheme(theme)
+    toast({
+      title: "Theme changed",
+      description: `Switched to ${themes.find(t => t.id === theme)?.name} theme.`,
+    })
   }
 
   return (
@@ -140,17 +79,17 @@ export function ThemeSelector() {
         {themes.map((theme) => (
           <DropdownMenuItem
             key={theme.id}
-            onClick={() => saveTheme(theme.id)}
+            onClick={() => handleThemeChange(theme.id)}
             disabled={loading}
-            className="cursor-pointer"
+            className="cursor-pointer transition-colors hover:bg-accent/50"
           >
             <div className="flex items-center gap-3 w-full">
-              <div className={`w-4 h-4 rounded-full border ${theme.preview}`} />
+              <div className={`w-4 h-4 rounded-full border-2 ${theme.preview} transition-transform hover:scale-110`} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="font-medium truncate">{theme.name}</span>
-                  {currentTheme === theme.id && (
-                    <Check className="h-4 w-4 text-primary" />
+                  {colorTheme === theme.id && (
+                    <Check className="h-4 w-4 text-primary transition-colors" />
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1 truncate">

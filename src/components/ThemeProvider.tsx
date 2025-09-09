@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from "@/integrations/supabase/client"
 
 type Theme = "dark" | "light" | "system"
-type ColorTheme = "sacred-gold" | "burgundy-gold" | "forest-cream" | "navy-amber"
+type ColorTheme = "default" | "burgundy-gold" | "forest-cream" | "navy-amber"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -21,7 +21,7 @@ type ThemeProviderState = {
 const initialState: ThemeProviderState = {
   theme: "system",
   setTheme: () => null,
-  colorTheme: "sacred-gold",
+  colorTheme: "default",
   setColorTheme: () => null,
 }
 
@@ -37,14 +37,30 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   )
-  const [colorTheme, setColorTheme] = useState<ColorTheme>("sacred-gold")
+  const [colorTheme, setColorTheme] = useState<ColorTheme>("default")
 
   // Load user's color theme preference when they sign in
   useEffect(() => {
     if (user) {
       loadUserColorTheme()
+    } else {
+      // Reset to default when logged out
+      setColorTheme("default")
+      applyColorTheme("default")
     }
   }, [user])
+
+  // Save theme preference when user logs out
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (user && colorTheme !== "default") {
+        saveUserColorTheme()
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [user, colorTheme])
 
   const loadUserColorTheme = async () => {
     try {
@@ -65,11 +81,29 @@ export function ThemeProvider({
     }
   }
 
+  const saveUserColorTheme = async () => {
+    if (!user) return
+    
+    try {
+      await supabase
+        .from('user_theme_preferences')
+        .upsert({
+          user_id: user.id,
+          theme_name: colorTheme,
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id'
+        })
+    } catch (error) {
+      console.log('Error saving theme preference')
+    }
+  }
+
   const applyColorTheme = (colorTheme: ColorTheme) => {
     const root = document.documentElement
     root.removeAttribute('data-theme')
     
-    if (colorTheme !== 'sacred-gold') {
+    if (colorTheme !== 'default') {
       root.setAttribute('data-theme', colorTheme)
     }
   }
