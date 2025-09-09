@@ -11,9 +11,10 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   requestChoirMembership: (email: string, fullName: string, message?: string) => Promise<{ error: any }>;
   loading: boolean;
+  isSuperAdmin: boolean;
   isAdmin: boolean;
   isChoirMember: boolean;
-  userRole: 'admin' | 'choir_member' | 'guest' | null;
+  userRole: 'super_admin' | 'admin' | 'choir_member' | 'guest' | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,9 +31,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isChoirMember, setIsChoirMember] = useState(false);
-  const [userRole, setUserRole] = useState<'admin' | 'choir_member' | 'guest' | null>(null);
+  const [userRole, setUserRole] = useState<'super_admin' | 'admin' | 'choir_member' | 'guest' | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -48,6 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             checkUserRoles(session.user.id);
           }, 0);
         } else {
+          setIsSuperAdmin(false);
           setIsAdmin(false);
           setIsChoirMember(false);
           setUserRole('guest'); // Default to guest for non-authenticated users
@@ -80,14 +83,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (data && data.length > 0) {
         const roles = data.map(item => item.role);
+        const isSuperAdminUser = roles.includes('super_admin');
         const isAdminUser = roles.includes('admin');
         const isChoirMemberUser = roles.includes('choir_member');
         
+        setIsSuperAdmin(isSuperAdminUser);
         setIsAdmin(isAdminUser);
         setIsChoirMember(isChoirMemberUser);
         
-        // Set primary role (admin takes precedence)
-        if (isAdminUser) {
+        // Set primary role (super_admin takes precedence)
+        if (isSuperAdminUser) {
+          setUserRole('super_admin');
+        } else if (isAdminUser) {
           setUserRole('admin');
         } else if (isChoirMemberUser) {
           setUserRole('choir_member');
@@ -95,11 +102,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUserRole('guest');
         }
       } else {
+        setIsSuperAdmin(false);
         setIsAdmin(false);
         setIsChoirMember(false);
         setUserRole('guest');
       }
     } catch (error) {
+      setIsSuperAdmin(false);
       setIsAdmin(false);
       setIsChoirMember(false);
       setUserRole('guest');
@@ -114,11 +123,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        toast({
-          title: "Sign In Failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        // Check if this is a choir member who hasn't been approved yet
+        if (error.message.includes('Invalid login credentials')) {
+          // Check if there's a pending choir member request
+          const { data: request } = await supabase
+            .from('choir_member_requests')
+            .select('status')
+            .eq('email', email)
+            .maybeSingle();
+            
+          if (request?.status === 'pending') {
+            toast({
+              title: "Membership Pending",
+              description: "Your choir membership request is still being reviewed by an admin. Please wait for approval.",
+              variant: "destructive",
+            });
+          } else if (request?.status === 'rejected') {
+            toast({
+              title: "Membership Rejected",
+              description: "Your choir membership request was not approved. Please contact an administrator.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Sign In Failed",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+        } else {
+          toast({
+            title: "Sign In Failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Welcome back!",
@@ -134,6 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string) => {
     try {
+      // For choir members, we create auth account but they can't login until approved
       const redirectUrl = `${window.location.origin}/`;
       
       const { error } = await supabase.auth.signUp({
@@ -153,7 +193,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         toast({
           title: "Account Created",
-          description: "Please check your email to verify your account.",
+          description: "Your account has been created. You'll be able to sign in once an admin approves your choir membership request.",
         });
       }
 
@@ -229,7 +269,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         toast({
           title: "Request Submitted",
-          description: "Your choir membership request has been submitted. An admin will review it soon.",
+          description: "Your choir membership request has been submitted. A super admin will review it soon.",
         });
       }
 
@@ -252,6 +292,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signOut,
     requestChoirMembership,
     loading,
+    isSuperAdmin,
     isAdmin,
     isChoirMember,
     userRole,

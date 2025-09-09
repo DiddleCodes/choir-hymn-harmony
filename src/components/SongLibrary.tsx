@@ -9,7 +9,7 @@ import { toSentenceCase } from "@/utils/textUtils";
 interface SongLibraryProps {
   searchTerm: string;
   onSongSelect: (song: Song) => void;
-  userRole?: 'admin' | 'choir_member' | 'guest' | null;
+  userRole?: 'super_admin' | 'admin' | 'choir_member' | 'guest' | null;
 }
 
 const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) => {
@@ -20,7 +20,7 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
   const { data: categories = [] } = useCategories();
 
   // Show categories only for choir members, admins, and super admins
-  const canSeeFilters = userRole === 'choir_member' || userRole === 'admin';
+  const canSeeFilters = userRole === 'choir_member' || userRole === 'admin' || userRole === 'super_admin';
   
   // For guests without search, don't show results
   const showResults = userRole !== 'guest' || searchTerm.trim().length > 0;

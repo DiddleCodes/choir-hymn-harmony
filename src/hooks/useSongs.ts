@@ -33,7 +33,7 @@ export interface Category {
   description?: string;
 }
 
-export const useSongs = (searchTerm?: string, categoryId?: string, userRole?: 'admin' | 'choir_member' | 'guest' | null) => {
+export const useSongs = (searchTerm?: string, categoryId?: string, userRole?: 'super_admin' | 'admin' | 'choir_member' | 'guest' | null) => {
   return useQuery({
     queryKey: ['songs', searchTerm, categoryId, userRole],
     queryFn: async () => {
