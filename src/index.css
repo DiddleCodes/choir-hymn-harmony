@@ -172,120 +172,9 @@
     transition: var(--transition-sacred);
   }
 
-  .transition-gentle {
-    transition: var(--transition-gentle);
-  }
-
-  /* Mobile-first smooth transitions */
-  .mobile-transition {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .mobile-fade-in {
-    animation: mobile-fade-in 0.6s ease-out;
-  }
-
-  .mobile-slide-up {
-    animation: mobile-slide-up 0.5s ease-out;
-  }
-
-  .mobile-scale-in {
-    animation: mobile-scale-in 0.4s ease-out;
-  }
-
-  .mobile-bounce-in {
-    animation: mobile-bounce-in 0.6s ease-out;
-  }
-
-  /* Smooth hover effects for mobile */
-  .mobile-card-hover {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .mobile-card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(184, 134, 11, 0.2);
-  }
-
-  /* Interactive button effects */
-  .mobile-button-press {
-    transition: all 0.15s ease;
-    transform-origin: center;
-  }
-
-  .mobile-button-press:active {
-    transform: scale(0.96);
-  }
-}
-
-@keyframes mobile-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes mobile-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes mobile-scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes mobile-bounce-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Bass clef loader animation */
-.bass-clef-loader {
-  animation: bassClefSpin 1.5s ease-in-out infinite;
-}
-
-@keyframes bassClefSpin {
-  0% { 
-    transform: rotate(0deg) scale(1);
-    opacity: 0.8;
-  }
-  50% { 
-    transform: rotate(180deg) scale(1.1);
-    opacity: 1;
-  }
-  100% { 
-    transform: rotate(360deg) scale(1);
-    opacity: 0.8;
-  }
+/* Gentle transition for interactive elements */
+.transition-gentle {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Mobile-optimized animations */
@@ -330,6 +219,26 @@
   }
 }
 
+/* Bass clef loader animation */
+.bass-clef-loader {
+  animation: bassClefSpin 1.5s ease-in-out infinite;
+}
+
+@keyframes bassClefSpin {
+  0% { 
+    transform: rotate(0deg) scale(1);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: rotate(180deg) scale(1.1);
+    opacity: 1;
+  }
+  100% { 
+    transform: rotate(360deg) scale(1);
+    opacity: 0.8;
+  }
+}
+
 @keyframes slideInUp {
   from {
     opacity: 0;
@@ -349,5 +258,33 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes mobile-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Clean up the CSS file */
+@layer components {
+  /* Mobile animations */
+  .mobile-fade-in {
+    animation: mobile-fade-in 0.6s ease-out;
+  }
+  
+  .mobile-button-press {
+    transition: all 0.15s ease;
+    transform-origin: center;
+  }
+  
+  .mobile-button-press:active {
+    transform: scale(0.96);
   }
 }

@@ -46,7 +46,7 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
 
   return (
         /* Mobile responsive section with animation */
-        <section className="py-8 md:py-16 px-4 overflow-x-hidden page-transition">
+        <section className="py-8 md:py-16 px-4 overflow-x-hidden mobile-fade-in">
           <div className="container mx-auto max-w-7xl">
             {/* Header */}
             <div className="text-center mb-8 md:mb-12">

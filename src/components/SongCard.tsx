@@ -1,7 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Music, Calendar, User, FileText } from "lucide-react";
+import { Music } from "lucide-react";
 import type { Song } from "@/hooks/useSongs";
 import { toSentenceCase } from "@/utils/textUtils";
 
@@ -11,117 +10,83 @@ interface SongCardProps {
   searchTerm?: string;
 }
 
-const SongCard = ({ song, onSelect, searchTerm = "" }: SongCardProps) => {
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'traditional': return 'bg-primary/10 text-primary border-primary/20';
-      case 'contemporary': return 'bg-accent/10 text-accent border-accent/20';
-      case 'seasonal': return 'bg-sacred-burgundy/10 text-sacred-burgundy border-sacred-burgundy/20';
-      case 'psalms': return 'bg-sacred-deep/10 text-sacred-deep border-sacred-deep/20';
-      default: return 'bg-muted text-muted-foreground';
-    }
-  };
-
+const HighlightedText = ({ text, searchTerm }: { text: string; searchTerm: string }) => {
+  if (!searchTerm) return <>{text}</>;
+  
+  const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+  
   return (
-    <Card className="group cursor-pointer card-hover mobile-card-hover transition-all duration-200 hover:shadow-lg hover:shadow-primary/10 animate-fade-in">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg font-display group-hover:text-primary transition-gentle line-clamp-2">
-              <span dangerouslySetInnerHTML={{ 
-                __html: searchTerm 
-                  ? toSentenceCase(song.title).replace(
-                      new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
-                      '<mark class="bg-primary/20 text-primary rounded px-1">$1</mark>'
-                    )
-                  : toSentenceCase(song.title)
-              }} />
-            </CardTitle>
-            {(song.author || song.composer) && (
-              <div className="flex items-center gap-1 mt-2 text-sm text-muted-foreground">
-                <User className="w-3 h-3" />
-                <span className="truncate">
-                  {song.author && song.composer 
-                    ? `${song.author} • ${song.composer}`
-                    : song.author || song.composer
-                  }
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col gap-2 items-end">
-            <Badge variant="outline" className={getCategoryColor(song.category)}>
-              {toSentenceCase(song.category)}
-            </Badge>
-            {song.type === 'hymn' && song.hymnNumber && (
-              <Badge variant="secondary" className="text-xs">
-                Hymn #{song.hymnNumber}
+    <>
+      {parts.map((part, index) => 
+        regex.test(part) ? (
+          <mark key={index} className="bg-primary/20 text-primary rounded px-1">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+};
+
+const SongCard = ({ song, onSelect, searchTerm = "" }: SongCardProps) => {
+  return (
+    <Card className="group cursor-pointer card-hover transition-all duration-200 hover:shadow-lg hover:shadow-primary/10 animate-fade-in mobile-button-press" onClick={() => onSelect(song)}>
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between">
+          <div className="space-y-2 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-xs">
+                {toSentenceCase(song.type)}
               </Badge>
-            )}
-            {song.type === 'song' && song.number && (
-              <Badge variant="secondary" className="text-xs">
-                #{song.number}
-              </Badge>
-            )}
-          </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          {/* Lyrics Preview */}
-          <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-            {song.type === 'hymn' 
-              ? song.englishLyrics?.[0]?.replace(/\n/g, ' ') || 'English lyrics available'
-              : song.lyrics[0]?.replace(/\n/g, ' ')
-            }
-          </p>
-          
-          {/* Song Details */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <FileText className="w-3 h-3" />
-                <span>
-                  {song.type === 'hymn' 
-                    ? `${(song.englishLyrics?.length || 0)} verses (Bilingual)`
-                    : `${song.verses} verses`
-                  }
-                </span>
-              </div>
-              {song.year && (
-                <div className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
-                  <span>{song.year}</span>
-                </div>
+              {song.hymnNumber && (
+                <Badge variant="secondary" className="text-xs">
+                  #{song.hymnNumber}
+                </Badge>
+              )}
+              {song.number && (
+                <Badge variant="secondary" className="text-xs">
+                  Song #{song.number}
+                </Badge>
               )}
             </div>
+            <h3 className="font-semibold text-lg group-hover:text-primary transition-colors line-clamp-2">
+              <HighlightedText text={song.title} searchTerm={searchTerm} />
+            </h3>
+            {song.author && (
+              <p className="text-sm text-muted-foreground">
+                by <HighlightedText text={song.author} searchTerm={searchTerm} />
+              </p>
+            )}
+            {(song.category || song.tags?.length) && (
+              <div className="flex flex-wrap gap-1">
+                {song.category && (
+                  <Badge variant="outline" className="text-xs">
+                    <HighlightedText text={toSentenceCase(song.category)} searchTerm={searchTerm} />
+                  </Badge>
+                )}
+                {song.tags?.slice(0, 2).map((tag) => (
+                  <Badge key={tag} variant="secondary" className="text-xs">
+                    <HighlightedText text={tag} searchTerm={searchTerm} />
+                  </Badge>
+                ))}
+              </div>
+            )}
+            
+            {/* Lyrics Preview */}
+            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+              {song.type === 'hymn' 
+                ? song.englishLyrics?.[0] || 'English lyrics available'
+                : song.lyrics?.[0] || 'Lyrics available'
+              }
+            </p>
           </div>
-
-          {/* Tags */}
-          {song.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {song.tags.slice(0, 3).map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-1 text-xs bg-muted/50 text-muted-foreground rounded-md"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* View Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onSelect(song)}
-            className="w-full mt-3 button-mobile mobile-button-press group-hover:bg-primary/5 group-hover:text-primary transition-gentle"
-          >
-            <Music className="w-4 h-4 mr-2" />
-            View {song.type === 'hymn' ? 'Hymn' : 'Lyrics'}
-          </Button>
+          
+          <div className="ml-4 flex-shrink-0">
+            <Music className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
         </div>
       </CardContent>
     </Card>
