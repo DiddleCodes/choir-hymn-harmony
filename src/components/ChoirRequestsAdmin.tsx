@@ -75,9 +75,31 @@ const ChoirRequestsAdmin = () => {
         return;
       }
 
+      // Get the request data to send welcome email
+      const { data: requestData, error: fetchError } = await supabase
+        .from('choir_member_requests')
+        .select('full_name, email')
+        .eq('id', requestId)
+        .single();
+
+      if (!fetchError && requestData) {
+        // Send welcome email
+        try {
+          await supabase.functions.invoke('send-welcome-email', {
+            body: {
+              email: requestData.email,
+              fullName: requestData.full_name,
+            },
+          });
+        } catch (emailError) {
+          console.error('Failed to send welcome email:', emailError);
+          // Don't show error to user, just log it
+        }
+      }
+
       toast({
         title: "Request Approved",
-        description: `${email} has been approved as a choir member`,
+        description: `${email} has been approved as a choir member and will receive a welcome email`,
       });
 
       fetchRequests();

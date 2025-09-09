@@ -135,8 +135,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
           if (request?.status === 'pending') {
             toast({
-              title: "Membership Pending",
-              description: "Your choir membership request is still being reviewed by an admin. Please wait for approval.",
+              title: "Account Pending Approval",
+              description: "Your account exists but your choir membership request is still being reviewed. Please wait for approval.",
               variant: "destructive",
             });
           } else if (request?.status === 'rejected') {

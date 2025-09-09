@@ -10,33 +10,33 @@ interface HeroSectionProps {
 
 const HeroSection = ({ searchTerm, onSearchChange }: HeroSectionProps) => {
   return (
-    <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden mobile-fade-in">
       {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 mobile-scale-in">
         <img 
           src={heroImage} 
           alt="Sacred music background" 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover mobile-transition"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-sacred-deep/70 via-sacred-deep/50 to-background/90" />
       </div>
       
       {/* Content - Mobile Responsive */}
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto mobile-slide-up">
         <div className="mb-6 md:mb-8">
-          <Music className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 md:mb-6 text-primary" />
-          <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-bold mb-4 md:mb-6 text-white">
+          <Music className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 md:mb-6 text-primary mobile-bounce-in" />
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-bold mb-4 md:mb-6 text-white mobile-fade-in">
             Sanctuary's
             <span className="text-primary ml-2 md:ml-4">Library</span>
           </h1>
-          <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light max-w-2xl mx-auto leading-relaxed mobile-fade-in">
             A beautiful collection of Hymns and Songs for Worship, 
             Choir and hearts seeking divine melody.
           </p>
         </div>
 
         {/* Search Bar - Mobile Responsive */}
-        <div className="relative max-w-2xl mx-auto px-4 sm:px-0">
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-0 mobile-slide-up">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <Input
@@ -46,24 +46,24 @@ const HeroSection = ({ searchTerm, onSearchChange }: HeroSectionProps) => {
               onChange={(e) => onSearchChange(e.target.value)}
               className="pl-12 pr-4 py-6 text-lg bg-white border-0 shadow-sacred rounded-2xl 
               focus:ring-2 focus:ring-primary/50 
-              text-gray-900 placeholder:text-gray-500 w-full font-medium"
+              text-gray-900 placeholder:text-gray-500 w-full font-medium mobile-transition mobile-button-press"
             />
           </div>
         </div>
 
         {/* Quick Stats - Mobile Responsive */}
-        <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mt-12 text-white/80 px-4">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mt-12 text-white/80 px-4 mobile-fade-in">
+          <div className="flex items-center gap-2 mobile-transition hover:text-primary">
             <Heart className="w-5 h-5 text-primary" />
             <span className="font-medium text-sm md:text-base">Timeless Hymns</span>
           </div>
           <div className="w-1 h-1 bg-white/40 rounded-full hidden sm:block" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mobile-transition hover:text-primary">
             <Music className="w-5 h-5 text-primary" />
             <span className="font-medium text-sm md:text-base">Beautiful Lyrics</span>
           </div>
           <div className="w-1 h-1 bg-white/40 rounded-full hidden sm:block" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mobile-transition hover:text-primary">
             <Music className="w-5 h-5 text-primary" />
             <span className="font-medium text-sm md:text-base">Song Collection</span>
           </div>

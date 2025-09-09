@@ -29,9 +29,9 @@ const Index = () => {
   };
 
   return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background mobile-fade-in">
         {/* Navigation */}
-        <nav className="fixed top-0 right-0 z-50 p-4 md:p-6">
+        <nav className="fixed top-0 right-0 z-50 p-4 md:p-6 mobile-slide-up">
           <div className="flex items-center gap-2 md:gap-3">
             <ThemeToggle />
             {user ? (
@@ -42,14 +42,14 @@ const Index = () => {
                   size="sm"
                   variant="outline"
                   asChild
-                  className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                  className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 mobile-button-press mobile-transition"
                 >
                   <Link to="/choir-signup">
                     <Users className="w-4 h-4 mr-2" />
                     <span className="hidden sm:inline">Choir Member</span>
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="sm" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20">
+                <Button asChild variant="outline" size="sm" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 mobile-button-press mobile-transition">
                   <Link to="/auth">
                     <LogIn className="w-4 h-4 mr-2" />
                     <span className="hidden sm:inline">Sign In</span>
@@ -67,11 +67,13 @@ const Index = () => {
       
       {/* Only show Song Library section on desktop to avoid duplication on mobile */}
       {!isMobile && (
-        <SongLibrary 
-          searchTerm={searchTerm}
-          onSongSelect={handleSongSelect}
-          userRole={userRole}
-        />
+        <div className="mobile-fade-in">
+          <SongLibrary 
+            searchTerm={searchTerm}
+            onSongSelect={handleSongSelect}
+            userRole={userRole}
+          />
+        </div>
       )}
       <SongModal 
         song={selectedSong}
@@ -81,7 +83,7 @@ const Index = () => {
       
       {/* Choir Membership Request Dialog */}
       <Dialog open={showChoirRequest} onOpenChange={setShowChoirRequest}>
-        <DialogContent>
+        <DialogContent className="mobile-scale-in">
           <ChoirMembershipRequest onClose={() => setShowChoirRequest(false)} />
         </DialogContent>
       </Dialog>
