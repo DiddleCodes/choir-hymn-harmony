@@ -265,5 +265,86 @@
   100% {
     opacity: 1;
     transform: scale(1);
+/* Bass clef loader animation */
+.bass-clef-loader {
+  animation: bassClefSpin 1.5s ease-in-out infinite;
+}
+
+@keyframes bassClefSpin {
+  0% { 
+    transform: rotate(0deg) scale(1);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: rotate(180deg) scale(1.1);
+    opacity: 1;
+  }
+  100% { 
+    transform: rotate(360deg) scale(1);
+    opacity: 0.8;
+  }
+}
+
+/* Mobile-optimized animations */
+@media (max-width: 768px) {
+  .transition-gentle {
+    transition: all 0.2s ease-out;
+  }
+  
+  /* Page transitions */
+  .page-transition {
+    animation: slideInUp 0.4s ease-out;
+  }
+  
+  /* Card interactions */
+  .card-hover {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  }
+  
+  .card-hover:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px hsl(var(--primary) / 0.15);
+  }
+  
+  /* Button interactions */
+  .button-mobile {
+    transition: all 0.15s ease-out;
+  }
+  
+  .button-mobile:active {
+    transform: scale(0.95);
+  }
+  
+  /* Modal animations */
+  .modal-enter {
+    animation: modalSlideUp 0.3s ease-out;
+  }
+  
+  /* Smooth scrolling */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

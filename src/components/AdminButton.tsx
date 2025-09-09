@@ -15,7 +15,7 @@ import {
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader } from '@/components/ui/dialog';
 
 const AdminButton = () => {
-  const { user, isSuperAdmin, isAdmin, signOut } = useAuth();
+  const { user, isSuperAdmin, isAdmin, signOut, userRole } = useAuth();
   const [showAdminDialog, setShowAdminDialog] = useState(false);
   const [showChoirRequests, setShowChoirRequests] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);

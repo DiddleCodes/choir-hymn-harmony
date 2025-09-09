@@ -23,7 +23,7 @@ const SongCard = ({ song, onSelect, searchTerm = "" }: SongCardProps) => {
   };
 
   return (
-    <Card className="group hover:shadow-sacred transition-sacred cursor-pointer bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/30">
+    <Card className="group cursor-pointer card-hover mobile-card-hover transition-all duration-200 hover:shadow-lg hover:shadow-primary/10 animate-fade-in">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -117,7 +117,7 @@ const SongCard = ({ song, onSelect, searchTerm = "" }: SongCardProps) => {
             variant="ghost"
             size="sm"
             onClick={() => onSelect(song)}
-            className="w-full mt-3 group-hover:bg-primary/5 group-hover:text-primary transition-gentle"
+            className="w-full mt-3 button-mobile mobile-button-press group-hover:bg-primary/5 group-hover:text-primary transition-gentle"
           >
             <Music className="w-4 h-4 mr-2" />
             View {song.type === 'hymn' ? 'Hymn' : 'Lyrics'}
