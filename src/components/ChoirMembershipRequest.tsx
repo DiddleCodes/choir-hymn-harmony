@@ -15,7 +15,7 @@ const ChoirMembershipRequest = ({ onClose }: ChoirMembershipRequestProps) => {
   const [formData, setFormData] = useState({
     email: "",
     fullName: "",
-   // message: "",
+    // message: "", // Commented out for now
   });
   const [isLoading, setIsLoading] = useState(false);
   const { requestChoirMembership } = useAuth();
@@ -32,7 +32,8 @@ const ChoirMembershipRequest = ({ onClose }: ChoirMembershipRequestProps) => {
     const { error } = await requestChoirMembership(
       formData.email,
       formData.fullName,
-     // formData.message
+      "" // Pass empty string for message
+      // formData.message // Original message field
     );
     
     if (!error) {
@@ -50,7 +51,7 @@ const ChoirMembershipRequest = ({ onClose }: ChoirMembershipRequestProps) => {
         </div>
         <CardTitle className="flex items-center gap-2 justify-center">
           <Music className="w-5 h-5" />
-          Join as a Choir Member
+          Join Our Choir
         </CardTitle>
         <CardDescription>
           Request access to songs and become a choir member. An admin will review your request.
@@ -84,7 +85,8 @@ const ChoirMembershipRequest = ({ onClose }: ChoirMembershipRequestProps) => {
             />
           </div>
           
-          {/* <div className="space-y-2">
+          {/* Commented out message field for now
+          <div className="space-y-2">
             <Label htmlFor="message">Message (Optional)</Label>
             <Textarea
               id="message"
@@ -94,7 +96,8 @@ const ChoirMembershipRequest = ({ onClose }: ChoirMembershipRequestProps) => {
               placeholder="Tell us why you'd like to join the choir..."
               rows={3}
             />
-          </div> */}
+          </div>
+          */}
           
           <div className="flex gap-2 pt-4">
             <Button
