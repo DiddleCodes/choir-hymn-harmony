@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Settings, Plus, LogOut } from 'lucide-react';
+import { Settings, Plus, LogOut, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminDialog from './AdminDialog';
 import {
@@ -10,10 +10,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@radix-ui/react-dialog';
+import ChoirRequestsAdmin from './ui/choirRequestsAdmin';
+import { DialogHeader } from './ui/dialog';
 
 const AdminButton = () => {
   const { user, isAdmin, signOut } = useAuth();
   const [showAdminDialog, setShowAdminDialog] = useState(false);
+  const [showChoirRequests, setShowChoirRequests] = useState(false);
 
   if (!user) return null;
 
@@ -33,6 +37,10 @@ const AdminButton = () => {
                 <Plus className="w-4 h-4 mr-2" />
                 Manage Songs
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowChoirRequests(true)}>
+                <Users className="w-4 h-4 mr-2" />
+                Choir Requests
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
             </>
           )}
@@ -44,10 +52,25 @@ const AdminButton = () => {
       </DropdownMenu>
 
       {isAdmin && (
-        <AdminDialog
-          open={showAdminDialog}
-          onClose={() => setShowAdminDialog(false)}
-        />
+        <>
+          <AdminDialog
+            open={showAdminDialog}
+            onClose={() => setShowAdminDialog(false)}
+          />
+          
+          {/* Choir Requests Dialog */}
+          <Dialog open={showChoirRequests} onOpenChange={setShowChoirRequests}>
+            <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Manage Choir Requests</DialogTitle>
+                <DialogDescription>
+                  Review and approve or reject choir membership requests
+                </DialogDescription>
+              </DialogHeader>
+              <ChoirRequestsAdmin />
+            </DialogContent>
+          </Dialog>
+        </>
       )}
     </>
   );
