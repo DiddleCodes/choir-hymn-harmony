@@ -82,70 +82,70 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  /* Burgundy & Gold Theme */
+  /* Burgundy & Gold Theme - Cinematic Excellence */
   :root[data-theme="burgundy-gold"] {
-    /* Core Background & Foreground */
-    --background: 350 15% 12%;
-    --foreground: 43 40% 95%;
+    /* Core Background & Foreground - Deep cinematic black with burgundy undertones */
+    --background: 0 20% 8%;
+    --foreground: 45 100% 75%;
 
-    /* Card System */
-    --card: 350 20% 16%;
-    --card-foreground: 43 40% 95%;
+    /* Card System - Subtle elevation with golden warmth */
+    --card: 0 25% 12%;
+    --card-foreground: 45 100% 75%;
 
     /* Interactive Elements */
-    --popover: 350 20% 16%;
-    --popover-foreground: 43 40% 95%;
+    --popover: 0 25% 12%;
+    --popover-foreground: 45 100% 75%;
 
-    /* Burgundy Primary */
-    --primary: 350 65% 50%;
-    --primary-foreground: 43 40% 95%;
-    --primary-glow: 43 70% 70%;
+    /* Golden Primary - Like the cinematic buttons */
+    --primary: 45 100% 65%;
+    --primary-foreground: 0 20% 8%;
+    --primary-glow: 45 100% 75%;
 
-    /* Champagne Secondary */
-    --secondary: 350 10% 22%;
-    --secondary-foreground: 43 40% 95%;
+    /* Deep Secondary */
+    --secondary: 0 30% 18%;
+    --secondary-foreground: 45 100% 75%;
 
     /* Muted Elements */
-    --muted: 350 8% 25%;
-    --muted-foreground: 43 20% 70%;
+    --muted: 0 20% 15%;
+    --muted-foreground: 45 50% 65%;
 
-    /* Champagne Gold Accent */
-    --accent: 43 70% 65%;
-    --accent-foreground: 350 15% 12%;
+    /* Golden Accent */
+    --accent: 45 100% 70%;
+    --accent-foreground: 0 20% 8%;
 
     /* Destructive */
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 43 40% 95%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 45 100% 75%;
 
     /* Borders & Inputs */
-    --border: 350 15% 28%;
-    --input: 350 15% 28%;
-    --ring: 350 65% 50%;
+    --border: 0 20% 22%;
+    --input: 0 20% 15%;
+    --ring: 45 100% 65%;
 
     /* Sacred Design Tokens */
-    --sacred-cream: 43 40% 95%;
-    --sacred-gold: 43 70% 65%;
-    --sacred-deep: 350 65% 50%;
-    --sacred-burgundy: 350 65% 45%;
+    --sacred-cream: 45 100% 75%;
+    --sacred-gold: 45 100% 70%;
+    --sacred-deep: 0 40% 15%;
+    --sacred-burgundy: 0 50% 25%;
 
-    /* Gradients */
-    --gradient-sacred: linear-gradient(135deg, hsl(var(--sacred-deep)), hsl(var(--sacred-gold)));
-    --gradient-divine: linear-gradient(180deg, hsl(var(--sacred-burgundy)), hsl(var(--background)));
-    --gradient-hymnal: linear-gradient(45deg, hsl(var(--sacred-gold) / 0.2), hsl(var(--sacred-deep) / 0.2));
+    /* Cinematic Gradients */
+    --gradient-sacred: linear-gradient(135deg, hsl(0 30% 12%), hsl(45 100% 65%));
+    --gradient-divine: linear-gradient(180deg, hsl(45 100% 70%), hsl(45 100% 80%));
+    --gradient-hymnal: linear-gradient(45deg, hsl(0 20% 8%), hsl(0 30% 15%));
 
-    /* Shadows */
-    --shadow-sacred: 0 10px 30px -5px hsl(var(--sacred-deep) / 0.4);
-    --shadow-gentle: 0 4px 20px -4px hsl(var(--sacred-gold) / 0.2);
-    --shadow-divine: 0 0 40px hsl(var(--sacred-gold) / 0.3);
+    /* Cinematic Shadows with golden glow */
+    --shadow-sacred: 0 15px 40px -10px hsl(0 40% 15% / 0.8);
+    --shadow-gentle: 0 8px 25px -6px hsl(45 100% 65% / 0.4);
+    --shadow-divine: 0 0 50px hsl(45 100% 70% / 0.4);
 
-    --sidebar-background: 350 20% 10%;
-    --sidebar-foreground: 43 40% 95%;
-    --sidebar-primary: 350 65% 50%;
-    --sidebar-primary-foreground: 43 40% 95%;
-    --sidebar-accent: 350 15% 20%;
-    --sidebar-accent-foreground: 43 40% 95%;
-    --sidebar-border: 350 15% 25%;
-    --sidebar-ring: 350 65% 50%;
+    --sidebar-background: 0 25% 10%;
+    --sidebar-foreground: 45 100% 75%;
+    --sidebar-primary: 45 100% 65%;
+    --sidebar-primary-foreground: 0 20% 8%;
+    --sidebar-accent: 0 20% 15%;
+    --sidebar-accent-foreground: 45 100% 75%;
+    --sidebar-border: 0 20% 20%;
+    --sidebar-ring: 45 100% 65%;
   }
 
   /* Forest Green & Cream Theme */
