@@ -182,18 +182,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const requestChoirMembership = async (email: string, fullName: string, message?: string) => {
     try {
+      // Validate inputs before sending to prevent security issues
+      const trimmedName = fullName.trim();
+      const trimmedEmail = email.trim();
+      
+      if (!trimmedName || trimmedName.length < 2) {
+        const error = new Error("Full name must be at least 2 characters long");
+        toast({
+          title: "Invalid Input",
+          description: "Please enter a valid full name (at least 2 characters)",
+          variant: "destructive",
+        });
+        return { error };
+      }
+
+      if (!trimmedEmail || !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(trimmedEmail)) {
+        const error = new Error("Invalid email format");
+        toast({
+          title: "Invalid Email",
+          description: "Please enter a valid email address",
+          variant: "destructive",
+        });
+        return { error };
+      }
+
       const { error } = await supabase
         .from('choir_member_requests')
         .insert({
-          email,
-          full_name: fullName,
-          message,
+          email: trimmedEmail,
+          full_name: trimmedName,
+          message: message?.trim() || null,
         });
 
       if (error) {
+        // Provide user-friendly error messages for common validation failures
+        let errorMessage = error.message;
+        if (error.message.includes('row-level security')) {
+          errorMessage = "Unable to submit request. Please check your information and try again.";
+        }
+        
         toast({
           title: "Request Failed",
-          description: error.message,
+          description: errorMessage,
           variant: "destructive",
         });
       } else {
@@ -205,6 +235,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { error };
     } catch (error) {
+      toast({
+        title: "Submission Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
       return { error };
     }
   };
