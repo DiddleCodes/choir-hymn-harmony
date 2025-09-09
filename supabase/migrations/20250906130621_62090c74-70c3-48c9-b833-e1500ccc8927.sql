@@ -1,25 +1,22 @@
--- Fix RLS policies for user_roles table
+-- User roles RLS
 CREATE POLICY "Users can view their own roles" 
 ON public.user_roles 
 FOR SELECT 
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Only admins can insert user roles" 
+CREATE POLICY "Admins or Super Admins can manage roles" 
 ON public.user_roles 
-FOR INSERT 
-WITH CHECK (has_role(auth.uid(), 'admin'::app_role));
+FOR ALL
+USING (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+)
+WITH CHECK (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
-CREATE POLICY "Only admins can update user roles" 
-ON public.user_roles 
-FOR UPDATE 
-USING (has_role(auth.uid(), 'admin'::app_role));
-
-CREATE POLICY "Only admins can delete user roles" 
-ON public.user_roles 
-FOR DELETE 
-USING (has_role(auth.uid(), 'admin'::app_role));
-
--- Fix RLS policies for playlists table
+-- Playlists
 CREATE POLICY "Users can view public playlists or their own" 
 ON public.playlists 
 FOR SELECT 
@@ -40,7 +37,7 @@ ON public.playlists
 FOR DELETE 
 USING (created_by = auth.uid());
 
--- Fix RLS policies for playlist_items table
+-- Playlist items
 CREATE POLICY "Users can view items in playlists they have access to" 
 ON public.playlist_items 
 FOR SELECT 
@@ -52,9 +49,16 @@ USING (
   )
 );
 
-CREATE POLICY "Users can add items to their own playlists" 
+CREATE POLICY "Users can manage items in their own playlists" 
 ON public.playlist_items 
-FOR INSERT 
+FOR ALL
+USING (
+  EXISTS (
+    SELECT 1 FROM public.playlists 
+    WHERE playlists.id = playlist_items.playlist_id 
+    AND playlists.created_by = auth.uid()
+  )
+)
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM public.playlists 
@@ -63,29 +67,7 @@ WITH CHECK (
   )
 );
 
-CREATE POLICY "Users can update items in their own playlists" 
-ON public.playlist_items 
-FOR UPDATE 
-USING (
-  EXISTS (
-    SELECT 1 FROM public.playlists 
-    WHERE playlists.id = playlist_items.playlist_id 
-    AND playlists.created_by = auth.uid()
-  )
-);
-
-CREATE POLICY "Users can delete items from their own playlists" 
-ON public.playlist_items 
-FOR DELETE 
-USING (
-  EXISTS (
-    SELECT 1 FROM public.playlists 
-    WHERE playlists.id = playlist_items.playlist_id 
-    AND playlists.created_by = auth.uid()
-  )
-);
-
--- Fix RLS policies for search_history table
+-- Search history
 CREATE POLICY "Users can view their own search history" 
 ON public.search_history 
 FOR SELECT 

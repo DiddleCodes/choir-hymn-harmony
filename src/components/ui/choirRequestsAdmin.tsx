@@ -41,34 +41,34 @@ const ChoirRequestsAdmin = () => {
     fetchRequests();
   }, [fetchRequests]);
 
-  const handleApprove = async (requestId) => {
+  const handleApprove = async (request) => {
     try {
-      // First, get the current user ID for reviewed_by
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      const { error } = await supabase
-        .from('choir_member_requests')
-        .update({ 
-          status: 'approved',
-          reviewed_at: new Date().toISOString(),
-          reviewed_by: user?.id || null
-        })
-        .eq('id', requestId);
-
-      if (error) {
-        console.error('Approval error:', error);
-        throw error;
+      const res = await fetch("/functions/v1/approve-choir-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: request.email,
+          full_name: request.full_name,
+          request_id: request.id,
+        }),
+      });
+  
+      const result = await res.json();
+  
+      if (!result.success) {
+        console.error("Approval error:", result.error);
+        throw new Error(result.error || "Failed to approve");
       }
-
+  
       toast({
         title: "Request Approved",
-        description: "The choir member request has been approved successfully.",
+        description: `Choir member created with user ID: ${result.user_id}`,
       });
-
+  
       fetchRequests();
       setActionDialog({ open: false, type: null });
     } catch (error) {
-      console.error('Error approving request:', error);
+      console.error("Error approving request:", error);
       toast({
         title: "Error",
         description: `Failed to approve request: ${error.message}`,
@@ -76,6 +76,7 @@ const ChoirRequestsAdmin = () => {
       });
     }
   };
+  
 
   const handleReject = async (requestId) => {
     try {
@@ -316,7 +317,7 @@ const ChoirRequestsAdmin = () => {
               variant={actionDialog.type === 'approve' ? 'default' : 'destructive'}
               onClick={() => {
                 if (actionDialog.type === 'approve') {
-                  handleApprove(selectedRequest?.id);
+                  handleApprove(selectedRequest);
                 } else {
                   handleReject(selectedRequest?.id);
                 }

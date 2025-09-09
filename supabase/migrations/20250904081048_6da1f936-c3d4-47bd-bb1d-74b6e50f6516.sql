@@ -1,11 +1,14 @@
--- Create user roles system
-CREATE TYPE public.app_role AS ENUM ('admin', 'user');
+-- Drop old enum if it exists
+DROP TYPE IF EXISTS public.app_role CASCADE;
 
--- Create user_roles table for role management
+-- Create user roles system
+CREATE TYPE public.app_role AS ENUM ('super_admin', 'admin', 'choir_member');
+
+-- User roles table
 CREATE TABLE public.user_roles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-    role app_role NOT NULL DEFAULT 'user',
+    role app_role NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     UNIQUE (user_id, role)
 );
@@ -13,7 +16,7 @@ CREATE TABLE public.user_roles (
 -- Enable RLS on user_roles
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
 
--- Create security definer function to check roles (avoids RLS recursion)
+-- Function to check if user has role
 CREATE OR REPLACE FUNCTION public.has_role(_user_id UUID, _role app_role)
 RETURNS BOOLEAN
 LANGUAGE SQL
@@ -29,117 +32,138 @@ AS $$
   )
 $$;
 
--- Add RLS policies for items (songs) table
+-- Items (songs & hymns) RLS
 ALTER TABLE public.items ENABLE ROW LEVEL SECURITY;
 
--- Allow public read access for all songs
+-- Anyone can view songs
 CREATE POLICY "Anyone can view songs"
 ON public.items
 FOR SELECT
 USING (is_active = true);
 
--- Only admins can insert songs
-CREATE POLICY "Only admins can insert songs"
+-- Admins or Super Admins can insert songs
+CREATE POLICY "Admins or Super Admins can insert songs"
 ON public.items
 FOR INSERT
 TO authenticated
-WITH CHECK (public.has_role(auth.uid(), 'admin'));
+WITH CHECK (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
--- Only admins can update songs  
-CREATE POLICY "Only admins can update songs"
+-- Admins or Super Admins can update songs
+CREATE POLICY "Admins or Super Admins can update songs"
 ON public.items
 FOR UPDATE
 TO authenticated
-USING (public.has_role(auth.uid(), 'admin'));
+USING (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
--- Only admins can delete songs
-CREATE POLICY "Only admins can delete songs"
+-- Admins or Super Admins can delete songs
+CREATE POLICY "Admins or Super Admins can delete songs"
 ON public.items
 FOR DELETE
 TO authenticated
-USING (public.has_role(auth.uid(), 'admin'));
+USING (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
--- Add RLS policies for item_versions (lyrics in multiple languages)
+-- Item versions
 ALTER TABLE public.item_versions ENABLE ROW LEVEL SECURITY;
 
--- Allow public read access for all versions
 CREATE POLICY "Anyone can view item versions"
 ON public.item_versions
 FOR SELECT
 USING (true);
 
--- Only admins can insert versions
-CREATE POLICY "Only admins can insert versions"
+CREATE POLICY "Admins or Super Admins can insert versions"
 ON public.item_versions
 FOR INSERT
 TO authenticated
-WITH CHECK (public.has_role(auth.uid(), 'admin'));
+WITH CHECK (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
--- Only admins can update versions
-CREATE POLICY "Only admins can update versions"
+CREATE POLICY "Admins or Super Admins can update versions"
 ON public.item_versions
 FOR UPDATE
 TO authenticated
-USING (public.has_role(auth.uid(), 'admin'));
+USING (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
--- Only admins can delete versions
-CREATE POLICY "Only admins can delete versions"
+CREATE POLICY "Admins or Super Admins can delete versions"
 ON public.item_versions
 FOR DELETE
 TO authenticated
-USING (public.has_role(auth.uid(), 'admin'));
+USING (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
--- Add RLS policies for categories
+-- Categories
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 
--- Allow public read access
 CREATE POLICY "Anyone can view categories"
 ON public.categories
 FOR SELECT
 USING (true);
 
--- Only admins can manage categories
-CREATE POLICY "Only admins can insert categories"
+CREATE POLICY "Admins or Super Admins can insert categories"
 ON public.categories
 FOR INSERT
 TO authenticated
-WITH CHECK (public.has_role(auth.uid(), 'admin'));
+WITH CHECK (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
-CREATE POLICY "Only admins can update categories"
+CREATE POLICY "Admins or Super Admins can update categories"
 ON public.categories
 FOR UPDATE
 TO authenticated
-USING (public.has_role(auth.uid(), 'admin'));
+USING (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
-CREATE POLICY "Only admins can delete categories"
+CREATE POLICY "Admins or Super Admins can delete categories"
 ON public.categories
 FOR DELETE
 TO authenticated
-USING (public.has_role(auth.uid(), 'admin'));
+USING (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
--- Add RLS policies for languages
+-- Languages
 ALTER TABLE public.languages ENABLE ROW LEVEL SECURITY;
 
--- Allow public read access
 CREATE POLICY "Anyone can view languages"
 ON public.languages
 FOR SELECT
 USING (true);
 
--- Only admins can manage languages
-CREATE POLICY "Only admins can insert languages"
+CREATE POLICY "Admins or Super Admins can insert languages"
 ON public.languages
 FOR INSERT
 TO authenticated
-WITH CHECK (public.has_role(auth.uid(), 'admin'));
+WITH CHECK (
+  has_role(auth.uid(), 'admin') OR 
+  has_role(auth.uid(), 'super_admin')
+);
 
--- Insert default languages (English and Yoruba)
+-- Insert defaults
 INSERT INTO public.languages (name, code) VALUES 
 ('English', 'en'),
 ('Yoruba', 'yo')
 ON CONFLICT DO NOTHING;
 
--- Insert default categories
 INSERT INTO public.categories (name, description) VALUES 
 ('Traditional Hymns', 'Classic hymns and traditional worship songs'),
 ('Contemporary', 'Modern worship and praise songs'),
