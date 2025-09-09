@@ -34,8 +34,10 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-7xl">
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-2 text-muted-foreground">Loading songs...</span>
+            <div className="bass-clef-loader text-4xl text-primary">
+              𝄢
+            </div>
+            <span className="ml-3 text-muted-foreground">Loading songs...</span>
           </div>
         </div>
       </section>
@@ -43,8 +45,8 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
   }
 
   return (
-        /* Mobile responsive section */
-        <section className="py-8 md:py-16 px-4 overflow-x-hidden">
+        /* Mobile responsive section with animation */
+        <section className="py-8 md:py-16 px-4 overflow-x-hidden page-transition">
           <div className="container mx-auto max-w-7xl">
             {/* Header */}
             <div className="text-center mb-8 md:mb-12">

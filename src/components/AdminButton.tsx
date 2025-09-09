@@ -64,10 +64,11 @@ const AdminButton = () => {
 
       {canManage && (
         <>
-          <AdminDialog
-            open={showAdminDialog}
-            onClose={() => setShowAdminDialog(false)}
-          />
+        <AdminDialog
+          open={showAdminDialog}
+          onClose={() => setShowAdminDialog(false)}
+          userRole={userRole}
+        />
           
           {isSuperAdmin && (
             <>

@@ -54,9 +54,11 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
             
             <div style="text-align: center; margin-top: 30px;">
-              <a href="${Deno.env.get('SITE_URL') || 'https://7e67bb3d-e4d1-440d-b455-bd3cbab73081.lovableproject.com'}/auth" 
-                 style="background: linear-gradient(135deg, #b8860b, #daa520); color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
-                Sign In Now
+              <a href="https://7e67bb3d-e4d1-440d-b455-bd3cbab73081.lovableproject.com/auth" 
+                 style="background: linear-gradient(135deg, #b8860b, #daa520); color: white; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 600; display: inline-block; font-size: 16px; box-shadow: 0 4px 15px rgba(184, 134, 11, 0.3); transform: translateY(0); transition: all 0.3s ease;"
+                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(184, 134, 11, 0.4)';"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(184, 134, 11, 0.3)';">
+                🎵 Sign In to Your Account
               </a>
             </div>
             

@@ -17,9 +17,14 @@ import { useSongs, useCategories, useInvalidateSongs } from '@/hooks/useSongs';
 interface AdminDialogProps {
   open: boolean;
   onClose: () => void;
+  userRole?: 'super_admin' | 'admin' | 'choir_member' | 'guest' | null;
 }
 
-const AdminDialog = ({ open, onClose }: AdminDialogProps) => {
+const AdminDialog = ({ open, onClose, userRole }: AdminDialogProps) => {
+  // Only allow admins and super admins to access
+  if (!userRole || (userRole !== 'admin' && userRole !== 'super_admin')) {
+    return null;
+  }
   const { toast } = useToast();
   const { data: songs = [], isLoading: songsLoading } = useSongs();
   const { data: categories = [] } = useCategories();
