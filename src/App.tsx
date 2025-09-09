@@ -16,8 +16,8 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark" storageKey="sanctuary-ui-theme">
-      <AuthProvider>
+    <AuthProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="sanctuary-ui-theme">
         <TooltipProvider>
           <Toaster />
           <Sonner />
@@ -33,8 +33,8 @@ const App = () => (
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
-      </AuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
