@@ -306,7 +306,7 @@ const AdminDialog = ({ open, onClose, userRole }: AdminDialogProps) => {
           <DialogTitle className="font-display text-2xl">Admin Panel</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue={isEditing ? "add" : "add"} className="flex-1">
+        <Tabs value={isEditing ? "add" : "manage"} className="flex-1">
           <div className="px-6">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="add" disabled={isEditing}>

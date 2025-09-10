@@ -38,7 +38,7 @@ export function ThemeProvider({
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   )
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
-    // Load from localStorage first, fallback to "default"
+    // Always load from localStorage first, preserve user's last choice
     const saved = localStorage.getItem('color-theme') as ColorTheme
     return saved || "default"
   })
@@ -48,7 +48,7 @@ export function ThemeProvider({
     if (user) {
       loadUserColorTheme()
     } else {
-      // Load from localStorage when logged out, don't reset to default
+      // When logged out, preserve the theme they had before signing out
       const savedTheme = localStorage.getItem('color-theme') as ColorTheme
       if (savedTheme && savedTheme !== colorTheme) {
         setColorTheme(savedTheme)
@@ -145,11 +145,29 @@ export function ThemeProvider({
       setTheme(theme)
     },
     colorTheme,
-    setColorTheme: (theme: ColorTheme) => {
-      setColorTheme(theme)
-      localStorage.setItem('color-theme', theme)
+    setColorTheme: (newTheme: ColorTheme) => {
+      setColorTheme(newTheme)
+      // Always save to localStorage to preserve across sign out/in
+      localStorage.setItem('color-theme', newTheme)
+      applyColorTheme(newTheme)
       if (user) {
-        saveUserColorTheme()
+        // Also save to database if user is logged in
+        const saveTheme = async () => {
+          try {
+            await supabase
+              .from('user_theme_preferences')
+              .upsert({
+                user_id: user.id,
+                theme_name: newTheme,
+                updated_at: new Date().toISOString(),
+              }, {
+                onConflict: 'user_id'
+              })
+          } catch (error) {
+            console.log('Error saving theme preference to database')
+          }
+        }
+        saveTheme()
       }
     },
   }
