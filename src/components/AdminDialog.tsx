@@ -32,6 +32,7 @@ const AdminDialog = ({ open, onClose, userRole }: AdminDialogProps) => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingSong, setEditingSong] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   
   const [newSong, setNewSong] = useState({
     title: '',
@@ -164,6 +165,114 @@ const AdminDialog = ({ open, onClose, userRole }: AdminDialogProps) => {
     }
   };
 
+  const handleEdit = (song: any) => {
+    setEditingSong(song.id);
+    setIsEditing(true);
+    setNewSong({
+      title: song.title || '',
+      author: song.author || '',
+      composer: song.composer || '',
+      type: song.type || 'song',
+      category: song.category || '',
+      lyrics: song.lyrics || '',
+      englishLyrics: song.englishLyrics || song.english_lyrics || '',
+      yorubaLyrics: song.yorubaLyrics || song.yoruba_lyrics || '',
+      hymnNumber: song.hymnNumber?.toString() || song.hymn_number?.toString() || '',
+      year: song.year?.toString() || song.year_written?.toString() || '',
+      number: song.number?.toString() || '',
+      tags: song.tags?.join(', ') || '',
+    });
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSong) return;
+
+    const isHymn = newSong.type === 'hymn';
+    
+    // Validation
+    if (!newSong.title || !newSong.category) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Get category ID
+      const { data: categoryData } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('name', newSong.category)
+        .single();
+
+      if (!categoryData) {
+        throw new Error('Category not found');
+      }
+
+      // Update the item
+      const itemData = {
+        title: newSong.title,
+        author: newSong.author || null,
+        composer: newSong.composer || null,
+        type: newSong.type,
+        category_id: categoryData.id,
+        year_written: newSong.year ? parseInt(newSong.year) : null,
+        number: newSong.number ? parseInt(newSong.number) : null,
+        hymn_number: isHymn && newSong.hymnNumber ? parseInt(newSong.hymnNumber) : null,
+        english_lyrics: isHymn ? newSong.englishLyrics : null,
+        yoruba_lyrics: isHymn ? newSong.yorubaLyrics : null,
+        tags: newSong.tags ? newSong.tags.split(',').map(t => t.trim()) : [],
+      };
+
+      const { error: itemError } = await supabase
+        .from('items')
+        .update(itemData)
+        .eq('id', editingSong);
+
+      if (itemError) throw itemError;
+
+      // For songs, update primary version with lyrics
+      if (!isHymn) {
+        const { error: versionError } = await supabase
+          .from('item_versions')
+          .update({ lyrics: newSong.lyrics })
+          .eq('item_id', editingSong)
+          .eq('is_primary', true);
+
+        if (versionError) throw versionError;
+      }
+
+      toast({
+        title: "Success",
+        description: `${newSong.type === 'hymn' ? 'Hymn' : 'Song'} updated successfully`,
+      });
+
+      setIsEditing(false);
+      setEditingSong(null);
+      resetForm();
+      invalidateSongs();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || `Failed to update ${newSong.type}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditingSong(null);
+    resetForm();
+  };
+
   const handleDelete = async (songId: string) => {
     if (!confirm('Are you sure you want to delete this song?')) return;
 
@@ -197,17 +306,19 @@ const AdminDialog = ({ open, onClose, userRole }: AdminDialogProps) => {
           <DialogTitle className="font-display text-2xl">Admin Panel</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="add" className="flex-1">
+        <Tabs defaultValue={isEditing ? "add" : "add"} className="flex-1">
           <div className="px-6">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="add">Add Song</TabsTrigger>
-              <TabsTrigger value="manage">Manage Songs</TabsTrigger>
+              <TabsTrigger value="add" disabled={isEditing}>
+                {isEditing ? "Edit Song" : "Add Song"}
+              </TabsTrigger>
+              <TabsTrigger value="manage" disabled={isEditing}>Manage Songs</TabsTrigger>
             </TabsList>
           </div>
 
           <TabsContent value="add" className="p-6 pt-4">
             <ScrollArea className="h-[600px]">
-              <form onSubmit={handleSubmit} className="space-y-6 pr-4">
+              <form onSubmit={isEditing ? handleSaveEdit : handleSubmit} className="space-y-6 pr-4">
                  {/* Type Selection */}
                  <div className="border rounded-lg p-4 bg-primary/5">
                    <h4 className="font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
@@ -425,22 +536,46 @@ const AdminDialog = ({ open, onClose, userRole }: AdminDialogProps) => {
                 </div>
 
                  <div className="flex gap-2 sticky bottom-0 bg-background pt-4 border-t">
-                   <Button type="submit" disabled={isSubmitting} className="flex-1">
-                     {isSubmitting ? (
-                       <>
-                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                         Adding {newSong.type === 'hymn' ? 'Hymn' : 'Song'}...
-                       </>
-                     ) : (
-                       <>
-                         <Plus className="w-4 h-4 mr-2" />
-                         Add {newSong.type === 'hymn' ? 'Hymn' : 'Song'}
-                       </>
-                     )}
-                   </Button>
-                   <Button type="button" variant="outline" onClick={resetForm}>
-                     Clear Form
-                   </Button>
+                   {isEditing ? (
+                     <>
+                       <Button type="submit" disabled={isSubmitting} className="flex-1">
+                         {isSubmitting ? (
+                           <>
+                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                             Updating {newSong.type === 'hymn' ? 'Hymn' : 'Song'}...
+                           </>
+                         ) : (
+                           <>
+                             <Save className="w-4 h-4 mr-2" />
+                             Save Changes
+                           </>
+                         )}
+                       </Button>
+                       <Button type="button" variant="outline" onClick={handleCancelEdit}>
+                         <X className="w-4 h-4 mr-2" />
+                         Cancel
+                       </Button>
+                     </>
+                   ) : (
+                     <>
+                       <Button type="submit" disabled={isSubmitting} className="flex-1">
+                         {isSubmitting ? (
+                           <>
+                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                             Adding {newSong.type === 'hymn' ? 'Hymn' : 'Song'}...
+                           </>
+                         ) : (
+                           <>
+                             <Plus className="w-4 h-4 mr-2" />
+                             Add {newSong.type === 'hymn' ? 'Hymn' : 'Song'}
+                           </>
+                         )}
+                       </Button>
+                       <Button type="button" variant="outline" onClick={resetForm}>
+                         Clear Form
+                       </Button>
+                     </>
+                   )}
                  </div>
               </form>
             </ScrollArea>
@@ -492,6 +627,14 @@ const AdminDialog = ({ open, onClose, userRole }: AdminDialogProps) => {
                               </div>
                             </div>
                             <div className="flex gap-1 ml-4">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleEdit(song)}
+                                className="text-primary hover:text-primary"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
                               <Button
                                 size="sm"
                                 variant="ghost"

@@ -37,16 +37,23 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   )
-  const [colorTheme, setColorTheme] = useState<ColorTheme>("default")
+  const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
+    // Load from localStorage first, fallback to "default"
+    const saved = localStorage.getItem('color-theme') as ColorTheme
+    return saved || "default"
+  })
 
   // Load user's color theme preference when they sign in
   useEffect(() => {
     if (user) {
       loadUserColorTheme()
     } else {
-      // Reset to default when logged out
-      setColorTheme("default")
-      applyColorTheme("default")
+      // Load from localStorage when logged out, don't reset to default
+      const savedTheme = localStorage.getItem('color-theme') as ColorTheme
+      if (savedTheme && savedTheme !== colorTheme) {
+        setColorTheme(savedTheme)
+        applyColorTheme(savedTheme)
+      }
     }
   }, [user])
 
@@ -138,7 +145,13 @@ export function ThemeProvider({
       setTheme(theme)
     },
     colorTheme,
-    setColorTheme,
+    setColorTheme: (theme: ColorTheme) => {
+      setColorTheme(theme)
+      localStorage.setItem('color-theme', theme)
+      if (user) {
+        saveUserColorTheme()
+      }
+    },
   }
 
   return (
