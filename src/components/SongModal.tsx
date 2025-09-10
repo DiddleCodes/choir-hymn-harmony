@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { X, Music, User, Calendar, FileText, Heart, Share2, Languages, Globe } from "lucide-react";
+import { Slider } from "@/components/ui/slider"; // 👈 added
+import { X, Music, User, Calendar, FileText, Heart, Share2 } from "lucide-react";
 import { useState } from "react";
 import type { Song } from "@/hooks/useSongs";
 import { toSentenceCase } from "@/utils/textUtils";
@@ -15,22 +16,29 @@ interface SongModalProps {
 }
 
 const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
-  const [viewMode, setViewMode] = useState<'english' | 'bilingual'>('bilingual');
-  
+  const [viewMode, setViewMode] = useState<"english" | "yoruba" | "bilingual">("bilingual");
+  const [layout, setLayout] = useState<"list" | "card">("card");
+  const [fontSize, setFontSize] = useState<number>(16);
+
   if (!song) return null;
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'traditional': return 'bg-primary/10 text-primary border-primary/20';
-      case 'contemporary': return 'bg-accent/10 text-accent border-accent/20';
-      case 'seasonal': return 'bg-sacred-burgundy/10 text-sacred-burgundy border-sacred-burgundy/20';
-      case 'psalms': return 'bg-sacred-deep/10 text-sacred-deep border-sacred-deep/20';
-      default: return 'bg-muted text-muted-foreground';
+      case "traditional":
+        return "bg-primary/10 text-primary border-primary/20";
+      case "contemporary":
+        return "bg-accent/10 text-accent border-accent/20";
+      case "seasonal":
+        return "bg-sacred-burgundy/10 text-sacred-burgundy border-sacred-burgundy/20";
+      case "psalms":
+        return "bg-sacred-deep/10 text-sacred-deep border-sacred-deep/20";
+      default:
+        return "bg-muted text-muted-foreground";
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => onClose()}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] p-0 gap-0 bg-background/95 backdrop-blur-sm">
         {/* Header */}
         <DialogHeader className="p-6 pb-4 border-b bg-card/30">
@@ -59,6 +67,7 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                   </div>
                 )}
               </div>
+
               <div className="flex items-center gap-3 mt-3">
                 <Badge variant="outline" className={getCategoryColor(song.category)}>
                   {toSentenceCase(song.category)}
@@ -66,50 +75,90 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <FileText className="w-4 h-4" />
                   <span>
-                    {song.type === 'hymn' 
-                      ? `${(song.englishLyrics?.length || 0)} verses (Bilingual)`
-                      : `${song.verses} verses`
-                    }
+                    {song.type === "hymn"
+                      ? `${(song.englishLyrics?.length || 0)} verses`
+                      : `${song.verses} verses`}
                   </span>
                 </div>
-                {song.type === 'hymn' && song.hymnNumber && (
-                  <Badge variant="secondary">
-                    Hymn #{song.hymnNumber}
-                  </Badge>
+                {song.type === "hymn" && song.hymnNumber && (
+                  <Badge variant="secondary">Hymn #{song.hymnNumber}</Badge>
                 )}
-                {song.type === 'song' && song.number && (
-                  <Badge variant="secondary">
-                    #{song.number}
-                  </Badge>
+                {song.type === "song" && song.number && (
+                  <Badge variant="secondary">#{song.number}</Badge>
                 )}
               </div>
-              {/* Language toggle for hymns */}
-              {song.type === 'hymn' && song.yorubaLyrics && (
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/30">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">View:</span>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant={viewMode === 'english' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewMode('english')}
-                      className="h-7 px-3 text-xs"
-                    >
-                      <Globe className="w-3 h-3 mr-1" />
-                      English Only
-                    </Button>
-                    <Button
-                      variant={viewMode === 'bilingual' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewMode('bilingual')}
-                      className="h-7 px-3 text-xs"
-                    >
-                      <Languages className="w-3 h-3 mr-1" />
-                      Bilingual
-                    </Button>
+
+              {/* Toggles */}
+              {song.type === "hymn" && song.yorubaLyrics && (
+                <div className="space-y-2 mt-3 pt-3 border-t border-border/30">
+                  {/* Language Toggle */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      View:
+                    </span>
+                    <div className="flex flex-1 bg-muted/40 rounded-lg overflow-hidden">
+                      {["english", "yoruba", "bilingual"].map((mode) => (
+                        <button
+                          key={mode}
+                          onClick={() => setViewMode(mode as any)}
+                          className={`flex-1 px-3 py-2 text-xs ${
+                            viewMode === mode ? "bg-primary text-white" : "text-muted-foreground"
+                          }`}
+                        >
+                          {mode === "english"
+                            ? "English"
+                            : mode === "yoruba"
+                            ? "Yoruba"
+                            : "Both"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Layout Toggle */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Layout:
+                    </span>
+                    <div className="flex gap-2">
+                      <Button
+                        variant={layout === "list" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setLayout("list")}
+                        className="h-7 px-3 text-xs"
+                      >
+                        📋 List
+                      </Button>
+                      <Button
+                        variant={layout === "card" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setLayout("card")}
+                        className="h-7 px-3 text-xs"
+                      >
+                        🗂️ Card
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Font Size Slider */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Font:
+                    </span>
+                    <Slider
+                      value={[fontSize]}
+                      min={12}
+                      max={28}
+                      step={1}
+                      onValueChange={(val) => setFontSize(val[0])}
+                      className="w-32"
+                    />
+                    <span className="text-sm">{fontSize}px</span>
                   </div>
                 </div>
               )}
             </div>
+
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="w-4 h-4" />
             </Button>
@@ -118,67 +167,95 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
 
         {/* Content */}
         <div className="flex-1 overflow-hidden">
-          <ScrollArea className="h-[60vh] p-6">
+          <ScrollArea className="h-[70vh] p-6">
             <div className="space-y-8">
-              {/* Lyrics */}
               <div className="space-y-6">
-                {song.type === 'hymn' ? (
-                  // Bilingual hymn layout
-                  <div className="space-y-6">
-                    {song.englishLyrics?.map((englishVerse, index) => {
+                {song.type === "hymn"
+                  ? song.englishLyrics?.map((englishVerse, index) => {
                       const yorubaVerse = song.yorubaLyrics?.[index];
+
+                      // Select verses to show based on view mode
+                      let versesToRender: { label: string; text: string }[] = [];
+                      if (viewMode === "english")
+                        versesToRender = [{ label: "English", text: englishVerse }];
+                      else if (viewMode === "yoruba" && yorubaVerse)
+                        versesToRender = [{ label: "Yoruba", text: yorubaVerse }];
+                      else if (viewMode === "bilingual") {
+                        versesToRender = [
+                          { label: "English", text: englishVerse },
+                          ...(yorubaVerse ? [{ label: "Yoruba", text: yorubaVerse }] : []),
+                        ];
+                      }
+
                       return (
-                        <Card key={index} className="bg-card/20 border-border/30">
-                          <CardContent className="p-6">
-                            <div className="flex items-start gap-4">
-                              <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                                <span className="text-sm font-medium text-primary">
-                                  {index + 1}
-                                </span>
-                              </div>
-                               <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                 <div>
-                                   <h5 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">English</h5>
-                                   <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
-                                     {englishVerse}
-                                   </pre>
-                                 </div>
-                                 {viewMode === 'bilingual' && yorubaVerse && (
-                                   <div>
-                                     <h5 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Yoruba</h5>
-                                     <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
-                                       {yorubaVerse}
-                                     </pre>
-                                   </div>
-                                 )}
-                               </div>
+                        <div key={index}>
+                          {layout === "card" ? (
+                            <Card className="bg-card/20 border-border/30 mb-4">
+                              <CardContent className="p-6">
+                                <div className="flex items-start gap-4">
+                                  <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                    <span className="text-sm font-medium text-primary">
+                                      {index + 1}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    {versesToRender.map((v, idx) => (
+                                      <div key={idx}>
+                                        <h5 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
+                                          {v.label}
+                                        </h5>
+                                        <pre
+                                          className="font-body text-foreground leading-relaxed whitespace-pre-wrap"
+                                          style={{ fontSize }}
+                                        >
+                                          {v.text}
+                                        </pre>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ) : (
+                            <div className="mb-4">
+                              <h5 className="text-sm font-semibold text-primary">
+                                Verse {index + 1}
+                              </h5>
+                              {versesToRender.map((v, idx) => (
+                                <pre
+                                  key={idx}
+                                  className="font-body text-foreground leading-relaxed whitespace-pre-wrap"
+                                  style={{ fontSize }}
+                                >
+                                  {v.text}
+                                </pre>
+                              ))}
                             </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  // Regular song layout
-                  song.lyrics.map((verse, index) => (
-                    <Card key={index} className="bg-card/20 border-border/30">
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-medium text-primary">
-                              {index + 1}
-                            </span>
-                          </div>
-                          <div className="flex-1">
-                            <pre className="font-body text-foreground leading-relaxed whitespace-pre-wrap">
-                              {verse}
-                            </pre>
-                          </div>
+                          )}
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                )}
+                      );
+                    })
+                  : song.lyrics.map((verse, index) => (
+                      <Card key={index} className="bg-card/20 border-border/30">
+                        <CardContent className="p-6">
+                          <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                              <span className="text-sm font-medium text-primary">
+                                {index + 1}
+                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <pre
+                                className="font-body text-foreground leading-relaxed whitespace-pre-wrap"
+                                style={{ fontSize }}
+                              >
+                                {verse}
+                              </pre>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
               </div>
 
               {/* Tags */}
