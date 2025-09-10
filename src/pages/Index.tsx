@@ -67,16 +67,14 @@ const Index = () => {
         onSearchChange={setSearchTerm}
       />
       
-      {/* Only show Song Library section on desktop to avoid duplication on mobile */}
-      {!isMobile && (
-        <div className="mobile-fade-in">
-          <SongLibrary 
-            searchTerm={searchTerm}
-            onSongSelect={handleSongSelect}
-            userRole={userRole}
-          />
-        </div>
-      )}
+      {/* Song Library section - now responsive for all devices */}
+      <div className="mobile-fade-in">
+        <SongLibrary 
+          searchTerm={searchTerm}
+          onSongSelect={handleSongSelect}
+          userRole={userRole}
+        />
+      </div>
       <SongModal 
         song={selectedSong}
         isOpen={!!selectedSong}
