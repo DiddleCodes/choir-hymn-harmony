@@ -1,21 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, Users, Music, Search, Library, Heart, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { LogIn, Users, Music, Search, Heart, BookOpen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import HeroSection from "@/components/HeroSection";
 import SongLibrary from "@/components/SongLibrary";
 import SongModal from "@/components/SongModal";
 import AdminButton from "@/components/AdminButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ThemeSelector } from "@/components/ThemeSelector";
-import { MobileNavigation } from "@/components/MobileNavigation";
-import { MobileSearchBar } from "@/components/MobileSearchBar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ChoirMembershipRequest from "@/components/ChoirMembershipRequest";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import type { Song } from "@/hooks/useSongs";
 
 const Index = () => {
@@ -23,8 +19,6 @@ const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [showChoirRequest, setShowChoirRequest] = useState(false);
-  const [currentSection, setCurrentSection] = useState("home");
-  const isMobile = useIsMobile();
 
   const handleSongSelect = (song: Song) => {
     setSelectedSong(song);
@@ -36,122 +30,120 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Mobile Navigation Header */}
-      {isMobile && (
-        <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/20">
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/70 rounded-lg flex items-center justify-center">
-                <Music className="w-4 h-4 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="font-display font-bold text-lg">Choir Harmony</h1>
-                <p className="text-xs text-muted-foreground">Sacred Songs & Hymns</p>
-              </div>
+      {/* Mobile App Header */}
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border/20">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/70 rounded-lg flex items-center justify-center shadow-lg shadow-primary/25">
+              <Music className="w-4 h-4 text-primary-foreground" />
             </div>
-            <MobileNavigation 
-              currentSection={currentSection} 
-              onSectionChange={setCurrentSection} 
-            />
+            <div>
+              <h1 className="font-display font-bold text-lg">Sanctuary's Library</h1>
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Enhanced Mobile Search Section */}
-      {isMobile && (
-        <div className="p-4 bg-gradient-to-r from-primary/5 via-background to-accent/5 border-b border-border/10">
-          <MobileSearchBar
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            placeholder="Search hymns, songs, lyrics..."
-          />
-          
-          {/* Quick Stats for Mobile */}
-          <div className="flex gap-2 mt-4 justify-center">
-            <Badge variant="secondary" className="flex items-center gap-1 hover-scale">
-              <Library className="w-3 h-3" />
-              500+ Songs
-            </Badge>
-            <Badge variant="secondary" className="flex items-center gap-1 hover-scale">
-              <Heart className="w-3 h-3" />
-              Bilingual
-            </Badge>
-            <Badge variant="secondary" className="flex items-center gap-1 hover-scale">
-              <Sparkles className="w-3 h-3" />
-              Interactive
-            </Badge>
-          </div>
-        </div>
-      )}
-
-      {/* Desktop Navigation */}
-      {!isMobile && (
-        <nav className="fixed top-0 right-0 z-50 p-4 md:p-6 mobile-slide-up">
-          <div className="flex items-center gap-2 md:gap-3">
-            <ThemeSelector />
+          <div className="flex items-center gap-2">
             <ThemeToggle />
             {user ? (
               <AdminButton />
             ) : (
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  asChild
-                  className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 mobile-button-press mobile-transition"
-                >
-                  <Link to="/choir-signup">
-                    <Users className="w-4 h-4 mr-2" />
-                    <span className="hidden sm:inline">Choir Member</span>
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="sm" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 mobile-button-press mobile-transition">
-                  <Link to="/auth">
-                    <LogIn className="w-4 h-4 mr-2" />
-                    <span className="hidden sm:inline">Sign In</span>
-                  </Link>
-                </Button>
-              </div>
-            )}
-          </div>
-        </nav>
-      )}
-
-      {/* Hero Section - Hidden on mobile when searching */}
-      {(!isMobile || !searchTerm) && (
-        <HeroSection 
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
-      )}
-      
-      {/* Song Library section - Enhanced for mobile */}
-      <div className={`mobile-fade-in ${isMobile ? 'pb-20' : ''}`}>
-        <SongLibrary 
-          searchTerm={searchTerm}
-          onSongSelect={handleSongSelect}
-          userRole={userRole}
-        />
-      </div>
-
-      {/* Mobile Quick Actions Bar */}
-      {isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-lg border-t border-border/20 p-4 z-30">
-          <div className="flex justify-center space-x-4">
-            {searchTerm && (
-              <Card className="px-4 py-2 bg-primary/10 border-primary/20">
-                <div className="flex items-center gap-2 text-sm">
-                  <Search className="w-4 h-4 text-primary" />
-                  <span className="text-muted-foreground">Searching:</span>
-                  <span className="font-medium text-primary truncate max-w-32">
-                    "{searchTerm}"
-                  </span>
-                </div>
-              </Card>
+              <Button
+                size="sm"
+                asChild
+                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25"
+              >
+                <Link to="/choir-signup">
+                  <Users className="w-4 h-4 mr-2" />
+                  Join as Choir Member
+                </Link>
+              </Button>
             )}
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Main Content */}
+      <div className="p-4 space-y-6">
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+          <Input
+            type="text"
+            placeholder="Search hymns or lyrics..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-12 pr-4 py-6 text-lg bg-background border-border shadow-lg rounded-2xl 
+            focus:ring-2 focus:ring-primary/50 font-medium"
+          />
+        </div>
+
+        {/* Feature Cards */}
+        {!searchTerm && (
+          <div className="space-y-4">
+            {/* Top Row - Two Cards */}
+            <div className="grid grid-cols-2 gap-4">
+              <Card className="bg-gradient-to-br from-background to-primary/5 border-border/20 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-6 text-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/70 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/25">
+                    <Heart className="w-6 h-6 text-primary-foreground" />
+                  </div>
+                  <h3 className="font-display font-bold text-lg mb-2">Timeless Hymns</h3>
+                  <p className="text-sm text-muted-foreground">Classic hymns for worship and reflection</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-background to-accent/5 border-border/20 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-6 text-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-accent to-accent/70 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-accent/25">
+                    <Music className="w-6 h-6 text-accent-foreground" />
+                  </div>
+                  <h3 className="font-display font-bold text-lg mb-2">Beautiful Lyrics</h3>
+                  <p className="text-sm text-muted-foreground">Inspiring songs with meaningful words</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Bottom Row - Full Width Card */}
+            <Card className="bg-gradient-to-r from-background to-secondary/5 border-border/20 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-8 text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-secondary to-secondary/70 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-secondary/25">
+                  <BookOpen className="w-8 h-8 text-secondary-foreground" />
+                </div>
+                <h3 className="font-display font-bold text-xl mb-3">Song Collection</h3>
+                <p className="text-muted-foreground mb-6">Available for approved choir members</p>
+              </CardContent>
+            </Card>
+
+            {/* Join Choir Member CTA */}
+            {!user && (
+              <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20 shadow-lg">
+                <CardContent className="p-8 text-center">
+                  <h3 className="font-display font-bold text-xl mb-3">Join our choir to access the complete song collection!</h3>
+                  <Button 
+                    size="lg"
+                    asChild
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 px-8 py-3 rounded-xl"
+                  >
+                    <Link to="/choir-signup">
+                      Join as Choir Member
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Song Library - Only show when searching */}
+        {searchTerm && (
+          <div className="pt-4">
+            <SongLibrary 
+              searchTerm={searchTerm}
+              onSongSelect={handleSongSelect}
+              userRole={userRole}
+            />
+          </div>
+        )}
+      </div>
 
       <SongModal 
         song={selectedSong}
@@ -161,7 +153,7 @@ const Index = () => {
       
       {/* Choir Membership Request Dialog */}
       <Dialog open={showChoirRequest} onOpenChange={setShowChoirRequest}>
-        <DialogContent className="mobile-scale-in">
+        <DialogContent>
           <ChoirMembershipRequest onClose={() => setShowChoirRequest(false)} />
         </DialogContent>
       </Dialog>
