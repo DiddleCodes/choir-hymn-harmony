@@ -127,7 +127,7 @@ const Auth = () => {
                       </Button>
                     </div>
                     
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-display" disabled={isLoading}>
                       {isLoading ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -170,7 +170,7 @@ const Auth = () => {
                         className="bg-background/50"
                       />
                     </div>
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-display" disabled={isLoading}>
                       {isLoading ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
