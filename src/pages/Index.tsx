@@ -57,14 +57,17 @@ const Index = () => {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               {user ? (
-                <AdminButton />
-              ) : (
                 <div className="flex items-center gap-2">
+                  <ThemeSelector />
+                  <AdminButton />
+                </div>
+              ) : (
+                <div className="flex items-center gap-1">
                   <Button
                     size="sm"
                     variant="outline"
                     asChild
-                    className="border-primary/20 text-primary hover:bg-primary/10 text-xs px-3 py-1"
+                    className="border-primary/20 text-primary hover:bg-primary/10 text-xs px-2 py-1"
                   >
                     <Link to="/auth">
                       <LogIn className="w-3 h-3 mr-1" />
@@ -74,11 +77,10 @@ const Index = () => {
                   <Button
                     size="sm"
                     asChild
-                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 text-xs px-3 py-1"
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 text-xs px-2 py-1"
                   >
                     <Link to="/choir-signup">
-                      <Users className="w-3 h-3 mr-1" />
-                      Join Choir
+                      <Users className="w-3 h-3" />
                     </Link>
                   </Button>
                 </div>
@@ -90,8 +92,8 @@ const Index = () => {
         {/* Hero Content */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto mt-20">
           <div className="mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/70 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-primary/25">
-              <Music className="w-10 h-10 text-primary-foreground animate-float" />
+            <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Music className="w-10 h-10 text-primary animate-float" />
             </div>
             <h1 className="text-4xl md:text-6xl font-display font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
               Sanctuary's <span className="text-primary">Library</span>
@@ -154,7 +156,7 @@ const Index = () => {
                       size="lg"
                       asChild
                       variant="outline"
-                      className="border-primary text-primary hover:bg-primary/10 px-6 py-2 rounded-xl"
+                      className="border-primary text-primary hover:bg-primary/10 px-6 py-2 rounded-xl font-display"
                     >
                       <Link to="/auth">
                         <LogIn className="w-4 h-4 mr-2" />
@@ -164,7 +166,7 @@ const Index = () => {
                     <Button 
                       size="lg"
                       asChild
-                      className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 px-6 py-2 rounded-xl"
+                      className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 px-6 py-2 rounded-xl font-display"
                     >
                       <Link to="/choir-signup">
                         <Users className="w-4 h-4 mr-2" />
