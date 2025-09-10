@@ -1,10 +1,24 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Slider } from "@/components/ui/slider"; // 👈 added
-import { X, Music, User, Calendar, FileText, Heart, Share2 } from "lucide-react";
+import {
+  X,
+  Music,
+  User,
+  Calendar,
+  FileText,
+  Heart,
+  Share2,
+  List,
+  LayoutGrid,
+} from "lucide-react";
 import { useState } from "react";
 import type { Song } from "@/hooks/useSongs";
 import { toSentenceCase } from "@/utils/textUtils";
@@ -16,7 +30,9 @@ interface SongModalProps {
 }
 
 const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
-  const [viewMode, setViewMode] = useState<"english" | "yoruba" | "bilingual">("bilingual");
+  const [viewMode, setViewMode] = useState<"english" | "yoruba" | "bilingual">(
+    "bilingual"
+  );
   const [layout, setLayout] = useState<"list" | "card">("card");
   const [fontSize, setFontSize] = useState<number>(16);
 
@@ -69,7 +85,10 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
               </div>
 
               <div className="flex items-center gap-3 mt-3">
-                <Badge variant="outline" className={getCategoryColor(song.category)}>
+                <Badge
+                  variant="outline"
+                  className={getCategoryColor(song.category)}
+                >
                   {toSentenceCase(song.category)}
                 </Badge>
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -90,7 +109,7 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
 
               {/* Toggles */}
               {song.type === "hymn" && song.yorubaLyrics && (
-                <div className="space-y-2 mt-3 pt-3 border-t border-border/30">
+                <div className="space-y-3 mt-3 pt-3 border-t border-border/30">
                   {/* Language Toggle */}
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
@@ -102,7 +121,9 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                           key={mode}
                           onClick={() => setViewMode(mode as any)}
                           className={`flex-1 px-3 py-2 text-xs ${
-                            viewMode === mode ? "bg-primary text-white" : "text-muted-foreground"
+                            viewMode === mode
+                              ? "bg-primary text-white"
+                              : "text-muted-foreground"
                           }`}
                         >
                           {mode === "english"
@@ -123,37 +144,56 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                     <div className="flex gap-2">
                       <Button
                         variant={layout === "list" ? "default" : "ghost"}
-                        size="sm"
+                        size="icon"
                         onClick={() => setLayout("list")}
-                        className="h-7 px-3 text-xs"
+                        className="h-8 w-8"
+                        title="List View"
                       >
-                        📋 List
+                        <List className="h-4 w-4" />
                       </Button>
                       <Button
                         variant={layout === "card" ? "default" : "ghost"}
-                        size="sm"
+                        size="icon"
                         onClick={() => setLayout("card")}
-                        className="h-7 px-3 text-xs"
+                        className="h-8 w-8"
+                        title="Card View"
                       >
-                        🗂️ Card
+                        <LayoutGrid className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
 
-                  {/* Font Size Slider */}
-                  <div className="flex items-center gap-3">
+                  {/* Font Size Toggle */}
+                  <div className="flex items-center gap-2">
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                       Font:
                     </span>
-                    <Slider
-                      value={[fontSize]}
-                      min={12}
-                      max={28}
-                      step={1}
-                      onValueChange={(val) => setFontSize(val[0])}
-                      className="w-32"
-                    />
-                    <span className="text-sm">{fontSize}px</span>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFontSize((s) => Math.max(12, s - 2))}
+                        className="h-7 px-2 text-xs"
+                      >
+                        A-
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFontSize(16)}
+                        className="h-7 px-2 text-xs"
+                      >
+                        A
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFontSize((s) => Math.min(28, s + 2))}
+                        className="h-7 px-2 text-xs"
+                      >
+                        A+
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -177,13 +217,19 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                       // Select verses to show based on view mode
                       let versesToRender: { label: string; text: string }[] = [];
                       if (viewMode === "english")
-                        versesToRender = [{ label: "English", text: englishVerse }];
+                        versesToRender = [
+                          { label: "English", text: englishVerse },
+                        ];
                       else if (viewMode === "yoruba" && yorubaVerse)
-                        versesToRender = [{ label: "Yoruba", text: yorubaVerse }];
+                        versesToRender = [
+                          { label: "Yoruba", text: yorubaVerse },
+                        ];
                       else if (viewMode === "bilingual") {
                         versesToRender = [
                           { label: "English", text: englishVerse },
-                          ...(yorubaVerse ? [{ label: "Yoruba", text: yorubaVerse }] : []),
+                          ...(yorubaVerse
+                            ? [{ label: "Yoruba", text: yorubaVerse }]
+                            : []),
                         ];
                       }
 
@@ -236,7 +282,10 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                       );
                     })
                   : song.lyrics.map((verse, index) => (
-                      <Card key={index} className="bg-card/20 border-border/30">
+                      <Card
+                        key={index}
+                        className="bg-card/20 border-border/30 mb-4"
+                      >
                         <CardContent className="p-6">
                           <div className="flex items-start gap-4">
                             <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
@@ -264,7 +313,11 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                   <h4 className="font-medium mb-3 text-muted-foreground">Tags</h4>
                   <div className="flex flex-wrap gap-2">
                     {song.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="bg-muted/50">
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="bg-muted/50"
+                      >
                         {tag}
                       </Badge>
                     ))}
