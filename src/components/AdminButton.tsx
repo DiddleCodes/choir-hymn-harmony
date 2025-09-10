@@ -30,7 +30,12 @@ const AdminButton = () => {
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="gap-2 mobile-button-press">
             <Settings className="w-4 h-4" />
-            {isSuperAdmin ? 'Super Admin' : canManage ? 'Admin' : 'Account'}
+            <span className="hidden sm:inline">
+              {isSuperAdmin ? 'Super Admin' : canManage ? 'Admin' : 'Account'}
+            </span>
+            <span className="sm:hidden">
+              {isSuperAdmin ? 'S.A.' : canManage ? 'Admin' : 'User'}
+            </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="modal-enter">
