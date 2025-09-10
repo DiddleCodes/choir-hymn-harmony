@@ -59,16 +59,29 @@ const Index = () => {
               {user ? (
                 <AdminButton />
               ) : (
-                <Button
-                  size="sm"
-                  asChild
-                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 text-xs px-3 py-1"
-                >
-                  <Link to="/choir-signup">
-                    <Users className="w-3 h-3 mr-1" />
-                    Join Choir
-                  </Link>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    asChild
+                    className="border-primary/20 text-primary hover:bg-primary/10 text-xs px-3 py-1"
+                  >
+                    <Link to="/auth">
+                      <LogIn className="w-3 h-3 mr-1" />
+                      Sign In
+                    </Link>
+                  </Button>
+                  <Button
+                    size="sm"
+                    asChild
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 text-xs px-3 py-1"
+                  >
+                    <Link to="/choir-signup">
+                      <Users className="w-3 h-3 mr-1" />
+                      Join Choir
+                    </Link>
+                  </Button>
+                </div>
               )}
             </div>
           </div>
@@ -136,15 +149,29 @@ const Index = () => {
               <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20 shadow-lg">
                 <CardContent className="p-6 text-center">
                   <h3 className="font-display font-bold text-lg mb-3">Join our choir to access the complete song collection!</h3>
-                  <Button 
-                    size="lg"
-                    asChild
-                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 px-6 py-2 rounded-xl"
-                  >
-                    <Link to="/choir-signup">
-                      Join as Choir Member
-                    </Link>
-                  </Button>
+                  <div className="flex gap-3 justify-center">
+                    <Button 
+                      size="lg"
+                      asChild
+                      variant="outline"
+                      className="border-primary text-primary hover:bg-primary/10 px-6 py-2 rounded-xl"
+                    >
+                      <Link to="/auth">
+                        <LogIn className="w-4 h-4 mr-2" />
+                        Sign In
+                      </Link>
+                    </Button>
+                    <Button 
+                      size="lg"
+                      asChild
+                      className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 px-6 py-2 rounded-xl"
+                    >
+                      <Link to="/choir-signup">
+                        <Users className="w-4 h-4 mr-2" />
+                        Join Choir
+                      </Link>
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )}
