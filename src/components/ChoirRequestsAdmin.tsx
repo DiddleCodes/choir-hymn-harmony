@@ -32,6 +32,7 @@ const ChoirRequestsAdmin = () => {
       const { data, error } = await supabase
         .from('choir_member_requests')
         .select('*')
+        .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -193,7 +194,7 @@ const ChoirRequestsAdmin = () => {
       <CardContent>
         {requests.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No choir membership requests found
+            No pending choir membership requests found
           </div>
         ) : (
           <div className="space-y-4">

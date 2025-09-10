@@ -78,7 +78,7 @@ const AdminButton = () => {
           {isSuperAdmin && (
             <>
               <Dialog open={showChoirRequests} onOpenChange={setShowChoirRequests}>
-                <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col modal-enter">
+                <DialogContent className="max-w-[95vw] sm:max-w-6xl max-h-[90vh] overflow-hidden flex flex-col modal-enter">
                   <DialogHeader className="flex-shrink-0 pb-4 border-b">
                     <DialogTitle className="text-2xl font-display">Manage Choir Requests</DialogTitle>
                     <DialogDescription className="text-muted-foreground">
@@ -92,7 +92,7 @@ const AdminButton = () => {
               </Dialog>
 
               <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
-                <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col modal-enter">
+                <DialogContent className="max-w-[95vw] sm:max-w-6xl max-h-[90vh] overflow-hidden flex flex-col modal-enter">
                   <DialogHeader className="flex-shrink-0 pb-4 border-b">
                     <DialogTitle className="text-2xl font-display">User Management</DialogTitle>
                     <DialogDescription className="text-muted-foreground">
