@@ -19,7 +19,7 @@ import {
   List,
   LayoutGrid,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Song } from "@/hooks/useSongs";
 import { toSentenceCase } from "@/utils/textUtils";
 
@@ -30,11 +30,30 @@ interface SongModalProps {
 }
 
 const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
+  // Load preferences from localStorage
   const [viewMode, setViewMode] = useState<"english" | "yoruba" | "bilingual">(
-    "bilingual"
+    () => (localStorage.getItem("viewMode") as any) || "bilingual"
   );
-  const [layout, setLayout] = useState<"list" | "card">("card");
-  const [fontSize, setFontSize] = useState<number>(16);
+  const [layout, setLayout] = useState<"list" | "card">(
+    () => (localStorage.getItem("layout") as any) || "card"
+  );
+  const [fontSize, setFontSize] = useState<number>(() => {
+    const saved = localStorage.getItem("fontSize");
+    return saved ? parseInt(saved, 10) : 16;
+  });
+
+  // Persist changes to localStorage
+  useEffect(() => {
+    localStorage.setItem("viewMode", viewMode);
+  }, [viewMode]);
+
+  useEffect(() => {
+    localStorage.setItem("layout", layout);
+  }, [layout]);
+
+  useEffect(() => {
+    localStorage.setItem("fontSize", fontSize.toString());
+  }, [fontSize]);
 
   if (!song) return null;
 
@@ -163,37 +182,21 @@ const SongModal = ({ song, isOpen, onClose }: SongModalProps) => {
                     </div>
                   </div>
 
-                  {/* Font Size Toggle */}
+                  {/* Font Size Slider */}
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                       Font:
                     </span>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setFontSize((s) => Math.max(12, s - 2))}
-                        className="h-7 px-2 text-xs"
-                      >
-                        A-
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setFontSize(16)}
-                        className="h-7 px-2 text-xs"
-                      >
-                        A
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setFontSize((s) => Math.min(28, s + 2))}
-                        className="h-7 px-2 text-xs"
-                      >
-                        A+
-                      </Button>
-                    </div>
+                    <input
+                      type="range"
+                      min={12}
+                      max={28}
+                      step={2}
+                      value={fontSize}
+                      onChange={(e) => setFontSize(parseInt(e.target.value))}
+                      className="w-32 accent-primary"
+                    />
+                    <span className="text-xs">{fontSize}px</span>
                   </div>
                 </div>
               )}
