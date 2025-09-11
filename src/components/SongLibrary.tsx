@@ -5,7 +5,12 @@ import SongCard from "./SongCard";
 import { useSongs, useCategories, type Song } from "@/hooks/useSongs";
 import { toSentenceCase } from "@/utils/textUtils";
 import { motion, AnimatePresence } from "framer-motion";
-
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface SongLibraryProps {
   searchTerm: string;
@@ -57,9 +62,9 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
 
   if (isLoading) {
     return (
-      <section className="py-16 px-4">
+      <section className="py-12 px-4">
         <div className="container mx-auto max-w-7xl">
-          <div className="flex items-center justify-center py-16">
+          <div className="flex items-center justify-center py-12">
             <div className="bass-clef-loader text-4xl text-primary">𝄢</div>
             <span className="ml-3 text-muted-foreground">Loading songs...</span>
           </div>
@@ -72,31 +77,59 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
     /* Mobile responsive section with animation */
     <section
       ref={sectionRef}
-      className="py-6 md:py-12 px-4 overflow-x-hidden mobile-fade-in"
+      className="py-6 md:py-10 px-4 overflow-x-hidden mobile-fade-in"
     >
       <div className="container mx-auto max-w-7xl">
-        {/* Header (only show if no search term) */}
-        {searchTerm.trim().length === 0 && (
-          <div className="text-center mb-6 md:mb-10">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3">
-              Song Library
-            </h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Explore our collection of sacred hymns and worship songs
-            </p>
-          </div>
-        )}
+{/* Header (only show if no search term) */}
+{searchTerm.trim().length === 0 && (
+  <div className="text-center mb-4 md:mb-6">
+    <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold mb-1">
+      Song Library
+    </h2>
+    <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
+      Explore our collection of sacred hymns and worship songs
+    </p>
+  </div>
+)}
+
 
         {/* Filters and Controls */}
         {canSeeFilters && (
-          <div className="flex flex-col lg:flex-row gap-6 mb-8">
+          <div className="flex flex-col lg:flex-row gap-6 mb-6">
             {/* Category Filters */}
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-3">
                 <Filter className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Categories</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+
+              {/* Mobile Dropdown */}
+              <div className="block lg:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full">
+                      {selectedCategory === "all"
+                        ? "All Songs"
+                        : toSentenceCase(
+                            categories.find((c) => c.id === selectedCategory)?.name || ""
+                          )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-48">
+                    {categories.map((category) => (
+                      <DropdownMenuItem
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                      >
+                        {toSentenceCase(category.name)}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              {/* Desktop Inline Buttons */}
+              <div className="hidden lg:flex flex-wrap gap-2">
                 {categories.map((category) => (
                   <Button
                     key={category.id}
@@ -138,7 +171,7 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
 
         {/* Results Count */}
         {showResults && (
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-muted-foreground">
               {songs.length === 1 ? "1 song found" : `${songs.length} songs found`}
             </p>
@@ -178,12 +211,12 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
 
         {/* Empty State */}
         {showResults && songs.length === 0 && (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
               <Filter className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">No songs found</h3>
-            <p className="text-muted-foreground mb-6">
+            <h3 className="text-lg md:text-xl font-semibold mb-2">No songs found</h3>
+            <p className="text-muted-foreground mb-4">
               {userRole === "guest"
                 ? "Try searching for hymn numbers or lyrics"
                 : "Try adjusting your search or filter criteria"}
@@ -199,11 +232,11 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
 
         {/* Guest Message */}
         {!showResults && userRole === "guest" && (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
               <Filter className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Search to explore hymns</h3>
+            <h3 className="text-lg md:text-xl font-semibold mb-2">Search to explore hymns</h3>
             <p className="text-muted-foreground">
               Use the search bar above to find hymns by number or lyrics
             </p>
@@ -211,7 +244,7 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
         )}
       </div>
 
-         {/* Back to Top Button */}
+      {/* Back to Top Button */}
       <AnimatePresence>
         {showBackToTop && (
           <motion.button
@@ -233,6 +266,5 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
     </section>
   );
 };
-
 
 export default SongLibrary;
