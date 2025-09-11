@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogIn, Users, Music, Search, Heart, BookOpen } from "lucide-react";
+import { LogIn, Users, Music, Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import SongLibrary from "@/components/SongLibrary";
 import SongModal from "@/components/SongModal";
@@ -21,183 +21,109 @@ const Index = () => {
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [showChoirRequest, setShowChoirRequest] = useState(false);
 
-  const handleSongSelect = (song: Song) => {
-    setSelectedSong(song);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedSong(null);
-  };
+  const handleSongSelect = (song: Song) => setSelectedSong(song);
+  const handleCloseModal = () => setSelectedSong(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Hero Section with Background Image */}
-      <section className="relative min-h-[70vh] flex flex-col items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={heroImage} 
-            alt="Sacred music background" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background/90" />
-        </div>
-        
-        {/* Mobile App Header */}
-        <div className="absolute top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border/20">
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 flex items-center justify-center">
-                <Music className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h1 className="font-display font-bold text-lg">Sanctuary's Library</h1>
-              </div>
+    <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Fixed Header */}
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/20">
+        <div className="flex items-center justify-between p-4">
+          {/* Logo */}
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 flex items-center justify-center">
+              <Music className="w-5 h-5 text-primary" />
             </div>
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              {user ? (
-                <div className="flex items-center gap-2">
-                  <ThemeSelector />
-                  <AdminButton />
-                </div>
-              ) : (
-                <div className="flex items-center gap-1">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    asChild
-                    className="border-primary/20 text-primary hover:bg-primary/10 text-xs px-2 py-1"
-                  >
-                    <Link to="/auth">
-                      <LogIn className="w-3 h-3 mr-1" />
-                      Sign In
-                    </Link>
-                  </Button>
-                  <Button
-                    size="sm"
-                    asChild
-                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 text-xs px-2 py-1"
-                  >
-                    <Link to="/choir-signup">
-                      <Users className="w-3 h-3" />
-                    </Link>
-                  </Button>
-                </div>
-              )}
-            </div>
+            <h1 className="font-display font-bold text-lg">Sanctuary's Library</h1>
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            {user ? (
+              <div className="flex items-center gap-2">
+                <ThemeSelector />
+                <AdminButton />
+              </div>
+            ) : (
+              <div className="flex items-center gap-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  asChild
+                  className="border-primary/20 text-primary hover:bg-primary/10 text-xs px-2 py-1"
+                >
+                  <Link to="/auth">
+                    <LogIn className="w-3 h-3 mr-1" />
+                    Sign In
+                  </Link>
+                </Button>
+                <Button
+                  size="sm"
+                  asChild
+                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 text-xs px-2 py-1"
+                >
+                  <Link to="/choir-signup">
+                    <Users className="w-3 h-3" />
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto mt-20">
-          <div className="mb-6">
-            <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Music className="w-10 h-10 text-primary animate-float" />
-            </div>
-            <h1 className="text-4xl md:text-6xl font-display font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-              Sanctuary's <span className="text-primary">Library</span>
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8">
-              Join our choir community
-            </p>
-          </div>
-
-          {/* Search Bar */}
-          <div className="relative mb-4">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+        {/* Search Bar */}
+        <div className="px-4 pb-3">
+          <div className="relative max-w-xl mx-auto">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <Input
               type="text"
               placeholder="Search hymns or lyrics..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 pr-4 py-6 text-lg bg-background/80 backdrop-blur-sm border-border shadow-lg rounded-2xl 
-              focus:ring-2 focus:ring-primary/50 font-medium"
+              className="pl-12 pr-4 py-5 text-base bg-background/80 backdrop-blur-sm border-border shadow rounded-xl focus:ring-2 focus:ring-primary/50 font-medium"
             />
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* Main Content */}
-      <div className="p-4 space-y-6">
-        {/* Feature Cards */}
-        {!searchTerm && (
-          <div className="space-y-4">
-            {/* Top Row - Two Cards */}
+      {/* Scrollable Main Content */}
+      <main className="flex-1 overflow-y-auto px-4 space-y-6">
+        {/* Feature Cards (only when not searching & not signed in) */}
+        {!searchTerm && !user && (
+          <div className="space-y-4 pt-4">
             <div className="grid grid-cols-2 gap-4">
-              <Card className="bg-gradient-to-br from-background to-primary/5 border-border/20 shadow-lg hover:shadow-xl transition-all duration-300">
+              <Card className="bg-gradient-to-br from-background to-primary/5 border-border/20 shadow hover:shadow-lg transition">
                 <CardContent className="p-4 text-center">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/70 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-primary/25">
-                    <Heart className="w-5 h-5 text-primary-foreground" />
-                  </div>
                   <h3 className="font-display font-bold text-base mb-2">Timeless Hymns</h3>
                   <p className="text-xs text-muted-foreground">Classic hymns for worship</p>
                 </CardContent>
               </Card>
-
-              <Card className="bg-gradient-to-br from-background to-accent/5 border-border/20 shadow-lg hover:shadow-xl transition-all duration-300">
+              <Card className="bg-gradient-to-br from-background to-accent/5 border-border/20 shadow hover:shadow-lg transition">
                 <CardContent className="p-4 text-center">
-                  <div className="w-10 h-10 bg-gradient-to-br from-accent to-accent/70 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-accent/25">
-                    <Music className="w-5 h-5 text-accent-foreground" />
-                  </div>
                   <h3 className="font-display font-bold text-base mb-2">Beautiful Lyrics</h3>
                   <p className="text-xs text-muted-foreground">Inspiring meaningful words</p>
                 </CardContent>
               </Card>
             </div>
-
-            {/* Join Choir Member CTA */}
-            {!user && (
-              <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20 shadow-lg">
-                <CardContent className="p-6 text-center">
-                  <h3 className="font-display font-bold text-lg mb-3">Join our choir to access the complete song collection!</h3>
-                  <div className="flex gap-3 justify-center">
-                    <Button 
-                      size="lg"
-                      asChild
-                      variant="outline"
-                      className="border-primary text-primary hover:bg-primary/10 px-6 py-2 rounded-xl font-display"
-                    >
-                      <Link to="/auth">
-                        <LogIn className="w-4 h-4 mr-2" />
-                        Sign In
-                      </Link>
-                    </Button>
-                    <Button 
-                      size="lg"
-                      asChild
-                      className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg shadow-primary/25 px-6 py-2 rounded-xl font-display"
-                    >
-                      <Link to="/choir-signup">
-                        <Users className="w-4 h-4 mr-2" />
-                        Join Choir
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         )}
 
-        {/* Song Library - Only show when searching */}
-        {searchTerm && (
-          <div className="pt-4">
-            <SongLibrary 
-              searchTerm={searchTerm}
-              onSongSelect={handleSongSelect}
-              userRole={userRole}
-            />
-          </div>
-        )}
-      </div>
+        {/* Song Library */}
+        <SongLibrary
+          searchTerm={searchTerm}
+          onSongSelect={handleSongSelect}
+          userRole={userRole}
+        />
+      </main>
 
-      <SongModal 
+      {/* Song Modal */}
+      <SongModal
         song={selectedSong}
         isOpen={!!selectedSong}
         onClose={handleCloseModal}
       />
-      
+
       {/* Choir Membership Request Dialog */}
       <Dialog open={showChoirRequest} onOpenChange={setShowChoirRequest}>
         <DialogContent>

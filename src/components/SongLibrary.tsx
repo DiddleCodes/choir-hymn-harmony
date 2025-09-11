@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Grid, List, Filter, X, ArrowUp } from "lucide-react";
+import { Grid, List, Filter, X, ArrowUp, Music } from "lucide-react";
 import SongCard from "./SongCard";
 import { useSongs, useCategories, type Song } from "@/hooks/useSongs";
 import { toSentenceCase } from "@/utils/textUtils";
@@ -28,74 +28,72 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
 
   const sectionRef = useRef<HTMLDivElement | null>(null);
 
-  // Show categories only for choir members, admins, and super admins
   const canSeeFilters =
     userRole === "choir_member" || userRole === "admin" || userRole === "super_admin";
 
-  // For guests without search, don't show results
   const showResults = userRole !== "guest" || searchTerm.trim().length > 0;
 
-  const clearFilters = () => {
-    setSelectedCategory("all");
-  };
+  const clearFilters = () => setSelectedCategory("all");
 
-  // Auto-scroll to results when searching
+  // Scroll to results on search
   useEffect(() => {
     if (searchTerm.trim().length > 0 && sectionRef.current) {
       sectionRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [searchTerm]);
 
-  // Back to top button visibility
+  // Back to top visibility
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setShowBackToTop(true);
-      } else {
-        setShowBackToTop(false);
-      }
-    };
-
+    const handleScroll = () => setShowBackToTop(window.scrollY > 300);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Skeleton Loader
   if (isLoading) {
     return (
-      <section className="py-12 px-4">
-        <div className="container mx-auto max-w-7xl">
-          <div className="flex items-center justify-center py-12">
-            <div className="bass-clef-loader text-4xl text-primary">𝄢</div>
-            <span className="ml-3 text-muted-foreground">Loading songs...</span>
-          </div>
-        </div>
+      <section className="py-16 px-6 flex justify-center items-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-3"
+        >
+          <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+          <p className="text-muted-foreground">Loading songs...</p>
+        </motion.div>
       </section>
     );
   }
 
   return (
-    /* Mobile responsive section with animation */
     <section
       ref={sectionRef}
-      className="py-6 md:py-10 px-4 overflow-x-hidden mobile-fade-in"
+      className="py-6 md:py-10 px-4 overflow-x-hidden"
     >
       <div className="container mx-auto max-w-7xl">
-{/* Header (only show if no search term) */}
-{searchTerm.trim().length === 0 && (
-  <div className="text-center mb-4 md:mb-6">
-    <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold mb-1">
-      Song Library
-    </h2>
-    <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
-      Explore our collection of sacred hymns and worship songs
-    </p>
-  </div>
-)}
+        {/* Header (only show if no search term) */}
+        {searchTerm.trim().length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8"
+          >
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold mb-2">
+              Song Library
+            </h2>
+            <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
+              Explore our collection of sacred hymns and worship songs
+            </p>
+          </motion.div>
+        )}
 
-
-        {/* Filters and Controls */}
+        {/* Filters & Controls */}
         {canSeeFilters && (
-          <div className="flex flex-col lg:flex-row gap-6 mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col lg:flex-row gap-6 mb-8"
+          >
             {/* Category Filters */}
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-3">
@@ -136,7 +134,7 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
                     variant={selectedCategory === category.id ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSelectedCategory(category.id)}
-                    className="transition-gentle"
+                    className="rounded-full shadow-sm hover:shadow-md transition"
                   >
                     {toSentenceCase(category.name)}
                   </Button>
@@ -147,12 +145,12 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
             {/* View Mode Toggle */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">View:</span>
-              <div className="flex bg-muted rounded-lg p-1">
+              <div className="flex bg-muted rounded-xl p-1 shadow-inner">
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
-                  className="h-8 w-8 p-0"
+                  className="h-9 w-9 p-0 rounded-lg"
                 >
                   <Grid className="w-4 h-4" />
                 </Button>
@@ -160,18 +158,22 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
                   variant={viewMode === "list" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("list")}
-                  className="h-8 w-8 p-0"
+                  className="h-9 w-9 p-0 rounded-lg"
                 >
                   <List className="w-4 h-4" />
                 </Button>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Results Count */}
         {showResults && (
-          <div className="flex items-center justify-between mb-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center justify-between mb-6"
+          >
             <p className="text-sm text-muted-foreground">
               {songs.length === 1 ? "1 song found" : `${songs.length} songs found`}
             </p>
@@ -186,34 +188,49 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
                 Clear Filters
               </Button>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* Songs Grid/List */}
         {showResults && (
-          <div
+          <motion.div
+            layout
             className={
               viewMode === "grid"
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
                 : "space-y-4"
             }
           >
-            {songs.map((song) => (
-              <SongCard
-                key={song.id}
-                song={song}
-                onSelect={onSongSelect}
-                searchTerm={searchTerm}
-              />
-            ))}
-          </div>
+            <AnimatePresence>
+              {songs.map((song) => (
+                <motion.div
+                  key={song.id}
+                  layout
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <SongCard
+                    song={song}
+                    onSelect={onSongSelect}
+                    searchTerm={searchTerm}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         )}
 
         {/* Empty State */}
         {showResults && songs.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
-              <Filter className="w-8 h-8 text-muted-foreground" />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-16"
+          >
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <Music className="w-8 h-8 text-muted-foreground" />
             </div>
             <h3 className="text-lg md:text-xl font-semibold mb-2">No songs found</h3>
             <p className="text-muted-foreground mb-4">
@@ -227,20 +244,24 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
                 Clear Filters
               </Button>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* Guest Message */}
         {!showResults && userRole === "guest" && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
-              <Filter className="w-8 h-8 text-muted-foreground" />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-16"
+          >
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-muted-foreground" />
             </div>
             <h3 className="text-lg md:text-xl font-semibold mb-2">Search to explore hymns</h3>
             <p className="text-muted-foreground">
               Use the search bar above to find hymns by number or lyrics
             </p>
-          </div>
+          </motion.div>
         )}
       </div>
 
@@ -255,11 +276,10 @@ const SongLibrary = ({ searchTerm, onSongSelect, userRole }: SongLibraryProps) =
             transition={{ duration: 0.3 }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             className="fixed bottom-4 right-4 md:bottom-6 md:right-6 
-                       p-2 md:p-3 rounded-full bg-primary text-white 
-                       shadow-lg transition 
-                       opacity-80 hover:opacity-100 hover:bg-primary/90"
+                       p-3 rounded-full bg-primary text-white shadow-lg 
+                       hover:scale-110 transition-transform"
           >
-            <ArrowUp className="w-4 h-4 md:w-5 md:h-5" />
+            <ArrowUp className="w-5 h-5" />
           </motion.button>
         )}
       </AnimatePresence>
