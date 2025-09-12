@@ -6,13 +6,12 @@ import AdminDialog from './AdminDialog';
 import ChoirRequestsAdmin from './ChoirRequestsAdmin';
 import UserManagement from './UserManagement';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader } from '@/components/ui/dialog';
+import {
+  Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader,
+} from '@/components/ui/dialog';
 
 const AdminButton = () => {
   const { user, isSuperAdmin, isAdmin, signOut, userRole } = useAuth();
@@ -28,7 +27,7 @@ const AdminButton = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2 mobile-button-press">
+          <Button variant="outline" size="sm" className="gap-2">
             <Settings className="w-4 h-4" />
             <span className="hidden sm:inline">
               {isSuperAdmin ? 'Super Admin' : canManage ? 'Admin' : 'Account'}
@@ -38,76 +37,63 @@ const AdminButton = () => {
             </span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="modal-enter">
+
+        <DropdownMenuContent align="end">
           {canManage && (
             <>
               <DropdownMenuItem onClick={() => setShowAdminDialog(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Manage Songs
+                <Plus className="w-4 h-4 mr-2" /> Manage Songs
               </DropdownMenuItem>
+
               {isSuperAdmin && (
                 <>
-                  <DropdownMenuItem onClick={() => setShowChoirRequests(true)}>
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Choir Requests
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setShowUserManagement(true)}>
-                    <Users className="w-4 h-4 mr-2" />
-                    User Management
+                    <Users className="w-4 h-4 mr-2" /> User Management
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowChoirRequests(true)}>
+                    <UserPlus className="w-4 h-4 mr-2" /> Choir Requests
                   </DropdownMenuItem>
                 </>
               )}
+
               <DropdownMenuSeparator />
             </>
           )}
           <DropdownMenuItem onClick={signOut}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
+            <LogOut className="w-4 h-4 mr-2" /> Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {canManage && (
-        <>
-        <AdminDialog
-          open={showAdminDialog}
-          onClose={() => setShowAdminDialog(false)}
-          userRole={userRole}
-        />
-          
-          {isSuperAdmin && (
-            <>
-              <Dialog open={showChoirRequests} onOpenChange={setShowChoirRequests}>
-                <DialogContent className="max-w-[95vw] sm:max-w-6xl max-h-[90vh] overflow-hidden flex flex-col modal-enter">
-                  <DialogHeader className="flex-shrink-0 pb-4 border-b">
-                    <DialogTitle className="text-2xl font-display">Manage Choir Requests</DialogTitle>
-                    <DialogDescription className="text-muted-foreground">
-                      Review and approve or reject choir membership requests
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="flex-1 overflow-y-auto p-1 smooth-scroll">
-                    <ChoirRequestsAdmin />
-                  </div>
-                </DialogContent>
-              </Dialog>
+      <AdminDialog
+        open={showAdminDialog}
+        onClose={() => setShowAdminDialog(false)}
+        userRole={userRole}
+      />
 
-              <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
-                <DialogContent className="max-w-[95vw] sm:max-w-6xl max-h-[90vh] overflow-hidden flex flex-col modal-enter">
-                  <DialogHeader className="flex-shrink-0 pb-4 border-b">
-                    <DialogTitle className="text-2xl font-display">User Management</DialogTitle>
-                    <DialogDescription className="text-muted-foreground">
-                      View and manage all registered users
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="flex-1 overflow-y-auto p-1 smooth-scroll">
-                    <UserManagement />
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </>
-          )}
-        </>
-      )}
+      <Dialog open={showChoirRequests} onOpenChange={setShowChoirRequests}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Choir Requests</DialogTitle>
+            <DialogDescription>
+              Manage requests to join the choir
+            </DialogDescription>
+          </DialogHeader>
+          <ChoirRequestsAdmin />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>User Management</DialogTitle>
+            <DialogDescription>
+              Manage user roles and access levels
+            </DialogDescription>
+          </DialogHeader>
+          <UserManagement />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
